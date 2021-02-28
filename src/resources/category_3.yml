@@ -1,0 +1,173 @@
+# PLACEHOLDER
+
+#%orders_price_highest% lowest price in all buy order
+#%orders_price_highest% highest price in all buy order
+#&7%orders_total%&7 total amount of buy orders
+#%orders_content% total amount of items in sell offers
+#%offers__price_lowest% lowest price in all sell offer
+#%offers_price_highest% highest price in all sell offer
+#&7%offers_total%&7 total amount of sell offers
+#%offers_content% total amount of items in sell offers
+#placeholder dont always work, only these which are already used in an items description
+#empty price is taken if no sell offer or buy order exist. only for creating sell/buy and NOT for instant buy/sell
+'1':
+   emptyPrice: 2
+   showcase:
+      type: ROTTEN_FLESH
+      meta:
+         data: 0
+         lore:
+         - ' '
+         - '&7Buy price: &7%offers_price_lowest%'
+         - '&8%offers_content%&8 in &8%offers_total%&8 offers'
+         - '   '
+         - '&7Sell price: &7%orders_price_highest%'
+         - '&8%orders_content%&8 in &8%orders_total%&8 offers'
+         displayname: "&eRotten Flesh"
+   original:
+      type: ROTTEN_FLESH
+'2':
+   emptyPrice: 2
+   showcase:
+   
+      type: BONE
+      meta:
+         data: 0
+         lore:
+         - ' '
+         - '&7Buy price: &7%offers_price_lowest%'
+         - '&8%offers_content%&8 in &8%offers_total%&8 offers'
+         - '   '
+         - '&7Sell price: &7%orders_price_highest%'
+         - '&8%orders_content%&8 in &8%orders_total%&8 offers'
+         displayname: "&eBone"
+   original:
+      type: BONE
+'3':
+   emptyPrice: 2
+   showcase:
+      type: STRING
+      meta:
+         data: 0
+         lore:
+         - ' '
+         - '&7Buy price: &7%offers_price_lowest%'
+         - '&8%offers_content%&8 in &8%offers_total%&8 offers'
+         - '   '
+         - '&7Sell price: &7%orders_price_highest%'
+         - '&8%orders_content%&8 in &8%orders_total%&8 offers'
+         displayname: "&eString"
+   original:
+      type: STRING
+'4':
+   emptyPrice: 2
+   showcase:
+      type: SPIDER_EYE
+      meta:
+         data: 0
+         lore:
+         - ' '
+         - '&7Buy price: &7%offers_price_lowest%'
+         - '&8%offers_content%&8 in &8%offers_total%&8 offers'
+         - '   '
+         - '&7Sell price: &7%orders_price_highest%'
+         - '&8%orders_content%&8 in &8%orders_total%&8 offers'
+         displayname: "&eSpider Eye"
+   original:
+      type: SPIDER_EYE
+'5':
+   emptyPrice: 2
+   showcase:
+      type: SULPHUR
+      meta:
+         data: 0
+         lore:
+         - ' '
+         - '&7Buy price: &7%offers_price_lowest%'
+         - '&8%offers_content%&8 in &8%offers_total%&8 offers'
+         - '   '
+         - '&7Sell price: &7%orders_price_highest%'
+         - '&8%orders_content%&8 in &8%orders_total%&8 offers'
+         displayname: "&eGunpowder"
+   original:
+      type: SULPHUR
+'6':
+   emptyPrice: 2
+   showcase:
+      type: ENDER_PEARL
+      meta:
+         data: 0
+         lore:
+         - ' '
+         - '&7Buy price: &7%offers_price_lowest%'
+         - '&8%offers_content%&8 in &8%offers_total%&8 offers'
+         - '   '
+         - '&7Sell price: &7%orders_price_highest%'
+         - '&8%orders_content%&8 in &8%orders_total%&8 offers'
+         displayname: "&eEnder Pearl"
+   original:
+      type: ENDER_PEARL
+'7':
+   emptyPrice: 2
+   showcase:
+      type: GHAST_TEAR
+      meta:
+         data: 0
+         lore:
+         - ' '
+         - '&7Buy price: &7%offers_price_lowest%'
+         - '&8%offers_content%&8 in &8%offers_total%&8 offers'
+         - '   '
+         - '&7Sell price: &7%orders_price_highest%'
+         - '&8%orders_content%&8 in &8%orders_total%&8 offers'
+         displayname: "&eGhast Tear"
+   original:
+      type: GHAST_TEAR
+'8':
+   emptyPrice: 2
+   showcase:
+      type: SLIME_BALL
+      meta:
+         data: 0
+         lore:
+         - ' '
+         - '&7Buy price: &7%offers_price_lowest%'
+         - '&8%offers_content%&8 in &8%offers_total%&8 offers'
+         - '   '
+         - '&7Sell price: &7%orders_price_highest%'
+         - '&8%orders_content%&8 in &8%orders_total%&8 offers'
+         displayname: "&eSlimeball"
+   original:
+      type: SLIME_BALL
+'9':
+   emptyPrice: 2
+   showcase:
+      type: BLAZE_ROD
+      meta:
+         data: 0
+         lore:
+         - ' '
+         - '&7Buy price: &7%offers_price_lowest%'
+         - '&8%offers_content%&8 in &8%offers_total%&8 offers'
+         - '   '
+         - '&7Sell price: &7%orders_price_highest%'
+         - '&8%orders_content%&8 in &8%orders_total%&8 offers'
+         displayname: "&eBlaze Rod"
+   original:
+      type: BLAZE_ROD
+'10':
+   emptyPrice: 2
+   showcase:
+      type: MAGMA_CREAM
+      meta:
+         data: 0
+         lore:
+         - ' '
+         - '&7Buy price: &7%offers_price_lowest%'
+         - '&8%offers_content%&8 in &8%offers_total%&8 offers'
+         - '   '
+         - '&7Sell price: &7%orders_price_highest%'
+         - '&8%orders_content%&8 in &8%orders_total%&8 offers'
+         displayname: "&eMagma Cream"
+   original:
+      type: MAGMA_CREAM

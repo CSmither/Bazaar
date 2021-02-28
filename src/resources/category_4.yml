@@ -1,0 +1,268 @@
+# PLACEHOLDER
+
+#%orders_price_highest% lowest price in all buy order
+#%orders_price_highest% highest price in all buy order
+#&7%orders_total%&7 total amount of buy orders
+#%orders_content% total amount of items in sell offers
+#%offers__price_lowest% lowest price in all sell offer
+#%offers_price_highest% highest price in all sell offer
+#&7%offers_total%&7 total amount of sell offers
+#%offers_content% total amount of items in sell offers
+#placeholder dont always work, only these which are already used in an items description
+#empty price is taken if no sell offer or buy order exist. only for creating sell/buy and NOT for instant buy/sell
+'1':
+   emptyPrice: 2
+   showcase:
+      type: LOG
+      meta:
+         data: 0
+         displayname: "&eOak Log"
+         lore:
+         - ' '
+         - '&7Buy price: &7%offers_price_lowest%'
+         - '&8%offers_content%&8 in &8%offers_total%&8 offers'
+         - '   '
+         - '&7Sell price: &7%orders_price_highest%'
+         - '&8%orders_content%&8 in &8%orders_total%&8 offers'
+   original:
+      type: LOG
+'2':
+   emptyPrice: 2
+   showcase:
+      type: LOG
+      meta:
+         data: 1
+         displayname: "&eSpruce Log"
+         lore:
+         - ' '
+         - '&7Buy price: &7%offers_price_lowest%'
+         - '&8%offers_content%&8 in &8%offers_total%&8 offers'
+         - '   '
+         - '&7Sell price: &7%orders_price_highest%'
+         - '&8%orders_content%&8 in &8%orders_total%&8 offers'
+   original:
+      type: LOG
+      meta:
+          data: 1
+'3':
+   emptyPrice: 2
+   showcase:
+      type: LOG
+      meta:
+         data: 2
+         displayname: "&eBirch Log"
+         lore:
+         - ' '
+         - '&7Buy price: &7%offers_price_lowest%'
+         - '&8%offers_content%&8 in &8%offers_total%&8 offers'
+         - '   '
+         - '&7Sell price: &7%orders_price_highest%'
+         - '&8%orders_content%&8 in &8%orders_total%&8 offers'
+   original:
+      type: LOG
+      meta:
+          data: 2
+'4':
+   emptyPrice: 2
+   showcase:
+      type: LOG_2
+      meta:
+         data: 1
+         displayname: "&eDark Oak Log"
+         lore:
+         - ' '
+         - '&7Buy price: &7%offers_price_lowest%'
+         - '&8%offers_content%&8 in &8%offers_total%&8 offers'
+         - '   '
+         - '&7Sell price: &7%orders_price_highest%'
+         - '&8%orders_content%&8 in &8%orders_total%&8 offers'
+   original:
+      type: LOG_2
+      meta:
+          data: 1
+'5':
+   emptyPrice: 2
+   showcase:
+      type: LOG_2
+      meta:
+         data: 0
+         displayname: "&eAcacia Log"
+         lore:
+         - ' '
+         - '&7Buy price: &7%offers_price_lowest%'
+         - '&8%offers_content%&8 in &8%offers_total%&8 offers'
+         - '   '
+         - '&7Sell price: &7%orders_price_highest%'
+         - '&8%orders_content%&8 in &8%orders_total%&8 offers'
+   original:
+      type: LOG_2
+      meta:
+          data: 0
+'6':
+   emptyPrice: 2
+   showcase:
+      type: LOG
+      meta:
+         data: 3
+         displayname: "&Jungle Log"
+         lore:
+         - ' '
+         - '&7Buy price: &7%offers_price_lowest%'
+         - '&8%offers_content%&8 in &8%offers_total%&8 offers'
+         - '   '
+         - '&7Sell price: &7%orders_price_highest%'
+         - '&8%orders_content%&8 in &8%orders_total%&8 offers'
+   original:
+      type: LOG
+      meta:
+          data: 3
+'7':
+   emptyPrice: 2
+   showcase:
+      type: RAW_FISH
+      meta:
+         data: 0
+         displayname: "&eRaw Fish"
+         lore:
+         - ' '
+         - '&7Buy price: &7%offers_price_lowest%'
+         - '&8%offers_content%&8 in &8%offers_total%&8 offers'
+         - '   '
+         - '&7Sell price: &7%orders_price_highest%'
+         - '&8%orders_content%&8 in &8%orders_total%&8 offers'
+   original:
+      type: RAW_FISH
+'8':
+   emptyPrice: 2
+   showcase:
+      type: RAW_FISH
+      meta:
+         data: 1
+         displayname: "&eSalmon"
+         lore:
+         - ' '
+         - '&7Buy price: &7%offers_price_lowest%'
+         - '&8%offers_content%&8 in &8%offers_total%&8 offers'
+         - '   '
+         - '&7Sell price: &7%orders_price_highest%'
+         - '&8%orders_content%&8 in &8%orders_total%&8 offers'
+   original:
+      type: RAW_FISH
+      meta:
+          data: 1
+'9':
+   emptyPrice: 2
+   showcase:
+      type: RAW_FISH
+      meta:
+         data: 2
+         displayname: "&eClownfish"
+         lore:
+         - ' '
+         - '&7Buy price: &7%offers_price_lowest%'
+         - '&8%offers_content%&8 in &8%offers_total%&8 offers'
+         - '   '
+         - '&7Sell price: &7%orders_price_highest%'
+         - '&8%orders_content%&8 in &8%orders_total%&8 offers'
+   original:
+      type: RAW_FISH
+      meta:
+          data: 2
+'10':
+   emptyPrice: 2
+   showcase:
+      type: RAW_FISH
+      meta:
+         data: 3
+         displayname: "&ePufferfish"
+         lore:
+         - ' '
+         - '&7Buy price: &7%offers_price_lowest%'
+         - '&8%offers_content%&8 in &8%offers_total%&8 offers'
+         - '   '
+         - '&7Sell price: &7%orders_price_highest%'
+         - '&8%orders_content%&8 in &8%orders_total%&8 offers'
+   original:
+      type: RAW_FISH
+      meta:
+          data: 3
+'11':
+   emptyPrice: 2
+   showcase:
+      type: PRISMARINE_SHARD
+      meta:
+         data: 0
+         displayname: "&ePrismarine Shard"
+         lore:
+         - ' '
+         - '&7Buy price: &7%offers_price_lowest%'
+         - '&8%offers_content%&8 in &8%offers_total%&8 offers'
+         - '   '
+         - '&7Sell price: &7%orders_price_highest%'
+         - '&8%orders_content%&8 in &8%orders_total%&8 offers'
+   original:
+      type: PRISMARINE_SHARD
+'12':
+   emptyPrice: 2
+   showcase:
+      type: CLAY_BALL
+      meta:
+         data: 0
+         displayname: "&eClay"
+         lore:
+         - ' '
+         - '&7Buy price: &7%offers_price_lowest%'
+         - '&8%offers_content%&8 in &8%offers_total%&8 offers'
+         - '   '
+         - '&7Sell price: &7%orders_price_highest%'
+         - '&8%orders_content%&8 in &8%orders_total%&8 offers'
+   original:
+      type: CLAY_BALL
+'13':
+   emptyPrice: 2
+   showcase:
+      type: WATER_LILY
+      meta:
+         data: 0
+         displayname: "&eLilypad"
+         lore:
+         - ' '
+         - '&7Buy price: &7%offers_price_lowest%'
+         - '&8%offers_content%&8 in &8%offers_total%&8 offers'
+         - '   '
+         - '&7Sell price: &7%orders_price_highest%'
+         - '&8%orders_content%&8 in &8%orders_total%&8 offers'
+   original:
+      type: WATER_LILY
+'14':
+   emptyPrice: 2
+   showcase:
+      type: INK_SACK
+      meta:
+         data: 0
+         displayname: "&eInk Sack"
+         lore:
+         - ' '
+         - '&7Buy price: &7%offers_price_lowest%'
+         - '&8%offers_content%&8 in &8%offers_total%&8 offers'
+         - '   '
+         - '&7Sell price: &7%orders_price_highest%'
+         - '&8%orders_content%&8 in &8%orders_total%&8 offers'
+   original:
+      type: INK_SACK
+'15':
+   emptyPrice: 2
+   showcase:
+      type: SPONGE
+      meta:
+         data: 0
+         displayname: "&eSponge"
+         lore:
+         - ' '
+         - '&7Buy price: &7%offers_price_lowest%'
+         - '&8%offers_content%&8 in &8%offers_total%&8 offers'
+         - '   '
+         - '&7Sell price: &7%orders_price_highest%'
+         - '&8%orders_content%&8 in &8%orders_total%&8 offers'
+   original:
+      type: SPONGE

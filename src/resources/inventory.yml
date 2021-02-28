@@ -1,0 +1,368 @@
+#syntax:
+#type: MATERIAL_NAME
+#meta:
+#   data: 0 (extra inforamtion, numbers only)
+#   displayname: "nice item"
+#   lore:
+#   - "Line 1" (lore, as many lines as you want)
+#   flags:
+#   - HIDE_ATTRIBUTES (itemflags like hide attributes or hide enchantments)
+#   - HIDE_ENCHANTMENTS
+#   enchantments:
+#   - DURABILITY:12 (name:lvl)
+#   texture: some_string_for_a_custom_skull_with_texture 
+#
+
+#all posible placeholder for each item are used for the items below
+inventory:
+   #slots are fix
+   
+   name: Bazaar #not recommended to change
+
+   #for all invs
+   close:
+      type: BARRIER
+      meta:
+         displayname: "&cClose"
+         lore:
+         - "§7Click to close."
+   background:
+      type: STAINED_GLASS_PANE
+      meta:
+         data: 7
+         displayname: " "
+
+   #
+   createSellOffer:
+      confirm:
+         type: BARRIER
+         meta:
+            displayname: "&6Sell Offer"
+            lore:
+            - "&8Bazaar"
+            - " "
+            - "&7Price per unit: %unit_price%"
+            - "  "
+            - "&7Selling: &a%inventory_content%&7x %displayname%"
+            - "&7You earn: %price_total%"
+            - "   "
+            - "&eClick to submit offer!"
+      #how many do you want
+      sameAsBestOffer:
+         type: BARRIER #will change automatically
+         meta:
+            displayname: "&6Same as Best Offer"
+            lore:
+            - "&8Sell Offer Setup"
+            - " "
+            - "&7Use the same price as the"
+            - "&7lowest sell offer for this"
+            - "&7item."
+            - "  "
+            - "&7Selling: &a%inventory_content%&7x"
+            - "&7Unit Price: %offers_price_lowest%"
+            - "   "
+            - "&7Total: %price_total%"
+      bestOffer_01:
+         type: GOLD_NUGGET
+         meta:
+            displayname: "&6Best Offer -0.1"
+            lore:
+            - "&8Sell Offer Setup"
+            - " "
+            - "&7Beat the price of the best"
+            - "&7offer so yours filles"
+            - "&7first."
+            - "  "
+            - "&7Selling: &a%inventory_content%&7x"
+            - "&7Untit price: %unit_price%"
+            - "   "
+            - "&7Total: %price_total%"
+            - "   "
+      ofSpread10:
+         type: GOLD_BARDING
+         meta:
+            displayname: "&610% of Spread"
+            lore:
+            - "&8Sell Offer Setup"
+            - " "
+            - "&7Lowest sell price: %offers_price_lowest%"
+            - "&7Highest buy price: %orders_price_highest%"
+            - "&7Spread = %spread%"
+            - "  "
+            - "&7Ordering: &a%inventory_content%&7x"
+            - "&7Untit price: %unit_price%"
+            - "   "
+            - "&7Total: %price_total%"
+            - "   "
+   
+   createBuyOrder:
+      #how many do you want
+      
+      opt1:
+         type: BARRIER #will change automatically
+         meta:
+            displayname: "&aGet me a stack&7!"
+            lore:
+            - "&8Buy Order Setup"
+            - " "
+            - "&7Amount: &a64&7x"
+            - "  "
+            - "&eClick to proceed!"
+      opt2:
+         type: BARRIER #will change automatically
+         meta:
+            displayname: "&aA big stack&7!"
+            lore:
+            - "&8Buy Order Setup"
+            - " "
+            - "&7Amount: &a160&7x"
+            - "  "
+            - "&eClick to proceed!"
+      opt3:
+         type: BARRIER #will change automatically
+         meta:
+            displayname: "&aOne thousand!"
+            lore:
+            - "&8Buy Order Setup"
+            - " "
+            - "&7Amount: &a1024&7x"
+            - "  "
+            - "&eClick to proceed!"
+            
+      #how much do you want to pay
+      sameAsTopOrder:
+         type: BARRIER #material changes automatically
+         meta:
+            displayname: "&6Same as Top Order"
+            lore:
+            - "&8Buy Order Setup"
+            - " "
+            - "&7Use the same price as the"
+            - "&7highest buy order for this"
+            - "&7item."
+            - "  "
+            - "&7Ordering: &a%ordering%&7x"
+            - "&7Untit price: %unit_price%"
+            - "   "
+            - "&7Total: %price_total%"
+            - "   "
+      topOrder_01:
+         type: GOLD_NUGGET
+         meta:
+            displayname: "&6Top Order +0.1"
+            lore:
+            - "&8Buy Order Setup"
+            - " "
+            - "&7Beat the price of the top"
+            - "&7order so yours filles"
+            - "&7first."
+            - "  "
+            - "&7Ordering: &a%ordering%&7x"
+            - "&7Untit price: %unit_price%"
+            - "   "
+            - "&7Total: %price_total%"
+            - "   "
+      ofSpread5:
+         type: GOLD_BARDING
+         meta:
+            displayname: "&65% of Spread"
+            lore:
+            - "&8Buy Order Setup"
+            - " "
+            - "&7Lowest sell price: %offers_price_lowest%"
+            - "&7Highest buy price: %orders_price_highest%"
+            - "&7Spread = %spread%"
+            - "  "
+            - "&7Ordering: &a%ordering%&7x"
+            - "&7Untit price: %unit_price%"
+            - "   "
+            - "&7Total: %price_total%"
+            - "   "
+   buyInsta:
+      opt1:
+         type: BARRIER #will change automatically
+         meta:
+            displayname: "&aBuy only &eone&a!"
+            lore:
+            - " "
+            - "&7Amount: &a1&7x"
+            - "  "
+            - "&7Price: &6%offers_price_lowest%"
+            - "   "
+            - "&eClick to buy now!"
+      opt2:
+         type: BARRIER #will change automatically
+         meta:
+            displayname: "&aBuy a stack!"
+            lore:
+            - " "
+            - "&7Amount: &a64&6x"
+            - "  "
+            - "&7Price unit: %offers_price_lowest%"
+            - "&7Price: %price_total%"
+            - "   "
+            - "&eClick to buy now!"
+      fillInv:
+         type: CHEST
+         meta:
+            displayname: "&aFill my inventory!"
+            lore:
+            - " "
+            - "&7Amount: &a%inventory_free%&7x"
+            - "  "
+            - "&7Per unit: %offers_price_lowest%"
+            - "&7Price: %price_total%"
+            - "   "
+            - "&eClick to buy now!"
+            
+   opt_inv: #inventory with create sell offer / buy order / buy insta / sell insta
+      create_sell_offer:
+         type: EMPTY_MAP
+         meta:
+            displayname: "&6Create Sell Offer"
+            lore:
+            - " "
+            - "&6Top Offers:"
+            - "%top_offers_5%"
+            - "  "
+            - "&7Inventory: &a%inventory_content%&a items" 
+            - "   "
+            - "&bRight-Click to pick amount!"
+            - "&eClick to create sell offer!"
+      create_buy_order:
+         type: MAP
+         meta:
+            displayname: "&aCreate Buy Order"
+            lore:
+            - " "
+            - "&aTop Orders:"
+            - "%top_orders_5%"
+            - "  "
+            - "&eClick to setup buy order!"
+      sellInsta:
+         type: HOPPER
+         meta:
+            displayname: "&6Sell Instantly"
+            lore:
+            - " "
+            - "&7Inventory: &a%inventory_content%" #&cNone if no item in your inventory
+            - "  "
+            - "&7Price per unit: &6%orders_price_highest%" #contains coins, (example: "2.3 coins") if no buy order available: "&rN/A"
+      buyInsta:
+         type: GOLD_BARDING
+         meta:
+            displayname: "&aBuy Instantly"
+            lore: 
+            - " "
+            - "&7Price per unit: %offers_price_lowest%" #example: 2.9 coins; if no offer available, &cN/A will be displayed
+            - "&7Stack price: %offers_price_lowest_stack%" #example: 185.6 coins; if no offer available, &cN/A will be displayed
+            - "  "
+            - "&eClick to pick amount!"
+   
+   #manage enquiries
+   manage:
+      sellOffer:
+         type: BARRIER #will change auto
+         meta:
+            displayname: "&6&lSELL&7: %displayname%"
+            lore:
+            - "&8Worth %price_total% coins"
+            - " "
+            - "&7Offer amount: &a%selling%&7x"
+            - "&7Filled: &6%sold%&7/%selling% &a&l%percentage%%!"
+            - "  "
+            - "&7Price per unit: &6%unit_price% coins"
+            - "   "
+            - "&eYou have &6%coins_to_claim% coins &eto claim"
+            - "    "
+            - "&eClick to claim!"
+      buyOrder:
+         type: BARRIER #will change auto
+         meta:
+            displayname: "&a&lBUY&7: %displayname%"
+            lore:
+            - "&8Worth %price_total% coins"
+            - " "
+            - "&7Order amount: &a%buying%&7x"
+            - "&7Filled: &a%bought%&7/%buying% &a&l%percentage%%!"
+            - "  "
+            - "&7Price per unit: &6%unit_price% coins"
+            - "   "
+            - "&aYou have &2%items_to_claim% items &ato claim!"
+            - "    "
+            - "&eClick to claim!"
+   #main inventory (all categories, 5*9)
+   categories:
+      1:
+         file: "plugins/Bazaar/categories/category_1.yml"
+         item:
+            type: GOLD_HOE
+            meta:
+               data: 0
+               displayname: "Farming" #the name is also the name for the category
+               flags:
+               - 'HIDE_ATTRIBUTES'
+               lore:
+               - "Line 1"
+               - "Line 2"
+      2:
+         file: "plugins/Bazaar/categories/category_2.yml"
+         item:
+            type: DIAMOND_PICKAXE
+            meta:
+               data: 0
+               displayname: "Mining" #the name is also the name for the category
+               flags:
+               - 'HIDE_ATTRIBUTES'
+               lore:
+               - "Line 1"
+               - "Line 2"
+      3:
+         file: "plugins/Bazaar/categories/category_3.yml"
+         item:
+            type: IRON_SWORD
+            meta:
+               data: 0
+               displayname: "Combat" #the name is also the name for the category
+               flags:
+               - 'HIDE_ATTRIBUTES'
+               lore:
+               - "Line 1"
+               - "Line 2"
+      4:
+         file: "plugins/Bazaar/categories/category_4.yml"
+         item:
+            type: FISHING_ROD
+            meta:
+               data: 0
+               displayname: "Woods & Fish" #the name is also the name for the category
+               flags:
+               - 'HIDE_ATTRIBUTES'
+               lore:
+               - "Line 1"
+               - "Line 2"
+      5:
+         file: "plugins/Bazaar/categories/category_5.yml"
+         item:
+            type: ENCHANTMENT_TABLE
+            meta:
+               data: 0
+               displayname: "Oddities" #the name is also the name for the category
+               flags:
+               - 'HIDE_ATTRIBUTES'
+               lore:
+               - "Line 1"
+               - "Line 2"
+   manageEnquiries:
+      type: BOOK
+      meta:
+         displayname: "&aManage Enquiries"
+         lore:
+         - "&7Enquiries: &e%enquiries%"
+         - " "
+         - "&eYou have §6%coins_to_claim% coins &eto claim!" #if there are no coins to claim, the line will be removed
+         - "&2You have &a%items_to_claim% items &2to claim!" #if there are no items to claim, the line will be removed
+         - "  "
+         - "&eClick to manage!"
+               
