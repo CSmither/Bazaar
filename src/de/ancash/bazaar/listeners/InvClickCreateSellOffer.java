@@ -1,12 +1,13 @@
 package de.ancash.bazaar.listeners;
 
-import java.util.HashMap;
-
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import de.ancash.ilibrary.datastructures.maps.CompactMap;
+import de.ancash.ilibrary.datastructures.tuples.Duplet;
+import de.ancash.ilibrary.minecraft.nbt.NBTItem;
 import de.ancash.bazaar.files.Files;
 import de.ancash.bazaar.management.Category;
 import de.ancash.bazaar.management.PlayerManager;
@@ -18,10 +19,8 @@ import de.ancash.bazaar.utils.InventoryUtils;
 import de.ancash.bazaar.utils.ItemFromFile;
 import de.ancash.bazaar.utils.ItemStackUtils;
 import de.ancash.bazaar.utils.MathsUtils;
-import de.ancash.bazaar.utils.Pair;
 import de.ancash.bazaar.utils.Response;
 import de.ancash.bazaar.utils.SellOffer;
-import de.tr7zw.nbtapi.NBTItem;
 
 public class InvClickCreateSellOffer {
 
@@ -48,8 +47,9 @@ public class InvClickCreateSellOffer {
 			return;
 		}
 		NBTItem old_info = new NBTItem(e.getInv().getItem(11));
-		int item_id = old_info.getInteger("bazaar.item.id");
 		int category = old_info.getInteger("bazaar.category");
+		int show = old_info.getInteger("bazaar.item.show");
+		int sub = old_info.getInteger("bazaar.item.sub");
 		Player p = e.getPlayer();
 		//open inv for creating so
 		if(e.getTitle().contains("->")) {			
@@ -64,20 +64,20 @@ public class InvClickCreateSellOffer {
 			inv.clear();
 			inv.setContents(priceInv.clone());
 			
-			HashMap<String, String> placeholder = new HashMap<String, String>();
+			CompactMap<String, String> placeholder = new CompactMap<String, String>();
 			placeholder.put("%inventory_content%", "" + to_sell);
 			
 			Category cat = Category.getCategory(category);
-			SelfBalancingBST rootSellOffer = Category.getCategory(category).getSellOffer(item_id);
-			SelfBalancingBST rootBuyOrder = Category.getCategory(category).getBuyOrder(item_id);
+			SelfBalancingBST rootSellOffer = Category.getCategory(category).getSellOffers(show, sub);
+			SelfBalancingBST rootBuyOrder = Category.getCategory(category).getBuyOrders(show, sub);
 			SelfBalancingBSTNode buyOrderMax = (rootBuyOrder != null && !rootBuyOrder.isEmpty()) ? rootBuyOrder.getMax() : null;
 			SelfBalancingBSTNode sellOfferMin = (rootSellOffer != null && !rootSellOffer.isEmpty()) ? rootSellOffer.getMin() : null;
 			
 			if(buyOrderMax == null) p.sendMessage(Response.BUY_ORDER_USING_PREDEFINED_PRICE);
 			if(sellOfferMin == null) p.sendMessage(Response.SELL_OFFER_USING_PREDEFINED_PRICE);
 						
-			double lowestSellOfferPrice = (sellOfferMin == null) ? MathsUtils.round(cat.getPriceEmpty()[Category.getSlotByID(item_id)], 2) : MathsUtils.round(sellOfferMin.getKey(), 2);
-			double highestBuyOrderPrice= (buyOrderMax == null) ? MathsUtils.round(cat.getPriceEmpty()[Category.getSlotByID(item_id)], 2) : MathsUtils.round(buyOrderMax.getKey(), 2);
+			double lowestSellOfferPrice = (sellOfferMin == null) ? MathsUtils.round(cat.getEmptyPrices()[show - 1][sub - 1], 2) : MathsUtils.round(sellOfferMin.getKey(), 2);
+			double highestBuyOrderPrice= (buyOrderMax == null) ? MathsUtils.round(cat.getEmptyPrices()[show - 1][sub - 1], 2) : MathsUtils.round(buyOrderMax.getKey(), 2);
 			
 			placeholder.put("%offers_price_lowest%", "§6" + lowestSellOfferPrice + " coins");
 			placeholder.put("%orders_price_highest%", "§6" + highestBuyOrderPrice + " coins");
@@ -101,19 +101,20 @@ public class InvClickCreateSellOffer {
 			inv.setItem(12, ItemStackUtils.replacePlaceholder(priceInv[12].clone(), placeholder));
 			
 			//10 spread
-			Pair<Double, String> spread = InventoryUtils.getSpread(lowestSellOfferPrice, highestBuyOrderPrice, 10);
-			placeholder.put("%unit_price%", "§6" + MathsUtils.round(lowestSellOfferPrice - spread.getKey(), 2) + " coins");
-			placeholder.put("%price_total%", "§6" + (MathsUtils.round((lowestSellOfferPrice - spread.getKey()) * to_sell, 2)) + " coins");
-			placeholder.put("%spread%", spread.getValue());
+			Duplet<Double, String> spread = InventoryUtils.getSpread(lowestSellOfferPrice, highestBuyOrderPrice, 10);
+			placeholder.put("%unit_price%", "§6" + MathsUtils.round(lowestSellOfferPrice - spread.getFirst(), 2) + " coins");
+			placeholder.put("%price_total%", "§6" + (MathsUtils.round((lowestSellOfferPrice - spread.getFirst()) * to_sell, 2)) + " coins");
+			placeholder.put("%spread%", spread.getSecond());
 			inv.setItem(14, ItemStackUtils.replacePlaceholder(priceInv[14].clone(), placeholder));
 			
 			NBTItem nbt = new NBTItem(inv.getItem(11));
 			nbt.setInteger("bazaar.sell_offer.sell", to_sell);
-			nbt.setInteger("bazaar.item.id", item_id);
+			nbt.setInteger("bazaar.item.show", show);
+			nbt.setInteger("bazaar.item.sub", sub);
 			nbt.setInteger("bazaar.category", category);
 			nbt.setDouble("bazaar.sell_offer.price.1", lowestSellOfferPrice);
 			nbt.setDouble("bazaar.sell_offer.price.2", MathsUtils.round(lowestSellOfferPrice - 0.1, 2));
-			nbt.setDouble("bazaar.sell_offer.price.3", MathsUtils.round(lowestSellOfferPrice - spread.getKey(), 2));
+			nbt.setDouble("bazaar.sell_offer.price.3", MathsUtils.round(lowestSellOfferPrice - spread.getFirst(), 2));
 			inv.setItem(11, nbt.getItem());
 			p.openInventory(inv);
 			return;
@@ -123,12 +124,12 @@ public class InvClickCreateSellOffer {
 			Inventory inv = PlayerManager.get(p.getUniqueId()).getConfirmSellOffer();
 			inv.clear();
 			inv.setContents(confirm.clone());
-			HashMap<String, String> placeholder = new HashMap<String, String>();
+			CompactMap<String, String> placeholder = new CompactMap<String, String>();
 			double unit_price = e.getSlot() == 10 ? old_info.getDouble("bazaar.sell_offer.price.1") : (e.getSlot() == 12 ? old_info.getDouble("bazaar.sell_offer.price.2") : old_info.getDouble("bazaar.sell_offer.price.3"));
 			placeholder.put("%unit_price%", "§6" + unit_price + " coins");
 			placeholder.put("%price_total%", "§6" + MathsUtils.round(unit_price * old_info.getInteger("bazaar.sell_offer.sell"), 2) + " coins");
 			placeholder.put("%inventory_content%", "" + old_info.getInteger("bazaar.sell_offer.sell"));
-			placeholder.put("%displayname%", Category.getCategory(category).getShowcase()[Category.getSlotByID(item_id)].getItemMeta().getDisplayName());
+			placeholder.put("%displayname%", Category.getCategory(category).getSubShow()[show - 1][sub - 1].getItemMeta().getDisplayName());
 			
 			ItemStack c = e.getInv().getItem(10).clone();
 			ItemMeta im = c.getItemMeta();
@@ -138,7 +139,8 @@ public class InvClickCreateSellOffer {
 			NBTItem nbt = new NBTItem(ItemStackUtils.replacePlaceholder(c, placeholder));
 			nbt.setInteger("bazaar.category", category);
 			nbt.setInteger("bazaar.sell_offer.sell", old_info.getInteger("bazaar.sell_offer.sell"));
-			nbt.setInteger("bazaar.item_id", item_id);
+			nbt.setInteger("bazaar.item.show", show);
+			nbt.setInteger("bazaar.item.sub", sub);
 			nbt.setDouble("bazaar.sell_offer.unit_price", unit_price);
 			inv.setItem(13, nbt.getItem());
 			p.openInventory(inv);
@@ -152,11 +154,12 @@ public class InvClickCreateSellOffer {
 			}
 			NBTItem info = new NBTItem(e.getInv().getItem(13));
 			int to_sell = info.getInteger("bazaar.sell_offer.sell");
-			item_id = info.getInteger("bazaar.item_id");
 			int cat = info.getInteger("bazaar.category");
 			double unit_price = info.getDouble("bazaar.sell_offer.unit_price"); 
-			InventoryUtils.removeItemAmount(to_sell, Category.getCategory(cat).getContents()[item_id - 1].clone(), p);
-			SellOffer so = new SellOffer(to_sell, unit_price, p.getUniqueId(), cat, item_id);
+			show = info.getInteger("bazaar.item.show");
+			sub = info.getInteger("bazaar.item.sub");
+			InventoryUtils.removeItemAmount(to_sell, Category.getCategory(cat).getOriginial(show, sub).clone(), p);
+			SellOffer so = new SellOffer(to_sell, unit_price, p.getUniqueId(), cat, show, sub);
 			Enquiry.insert(so);
 			p.closeInventory();
 		}

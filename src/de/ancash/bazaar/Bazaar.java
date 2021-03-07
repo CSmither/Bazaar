@@ -3,6 +3,7 @@ package de.ancash.bazaar;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.UUID;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
@@ -28,7 +29,6 @@ import de.ancash.bazaar.utils.Chat.ChatLevel;
 import de.ancash.bazaar.utils.InventoryTemplates;
 import de.ancash.bazaar.utils.ItemFromFile;
 import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.permission.Permission;
 
 public class Bazaar extends JavaPlugin{
 
@@ -36,7 +36,7 @@ public class Bazaar extends JavaPlugin{
 	public static InventoryTemplates bazaarTemplate;
 	private static final Logger log = Logger.getLogger("Minecraft");
     private static Economy econ = null;
-    private static Permission perms = null;
+    //private static Permission perms = null;
 	
 	public void onEnable() {
 		long now = System.currentTimeMillis();
@@ -44,16 +44,10 @@ public class Bazaar extends JavaPlugin{
 		
 		Chat.sendMessage("Loading..", ChatLevel.INFO);
 		
-		Chat.sendMessage("Loading Files... ", ChatLevel.INFO);
 		new Files(plugin);
-		
-		Chat.sendMessage("Registering Listeners...", ChatLevel.INFO);
 		new Listeners(plugin);
+		registerCommands();
 		
-		Chat.sendMessage("Registering Commands...", ChatLevel.INFO);
-		getCommand("bz").setExecutor(new OpenBazaarCMD());
-		
-		Chat.sendMessage("Loading Template...", ChatLevel.INFO);
 		try {
 			loadTemplates();
 		} catch (IOException | InvalidConfigurationException e) {
@@ -63,7 +57,6 @@ public class Bazaar extends JavaPlugin{
 			return;
 		}
 		
-		Chat.sendMessage("Loading Categories...", ChatLevel.INFO);
 		try {
 			Category.init(plugin);
 		} catch (IOException | InvalidConfigurationException e) {
@@ -73,7 +66,6 @@ public class Bazaar extends JavaPlugin{
 			return;
 		}
 		
-		Chat.sendMessage("Loading Enquiries from Files...", ChatLevel.INFO);
 		Enquiry.load();
 		
 		if (!setupEconomy() ) {
@@ -81,7 +73,6 @@ public class Bazaar extends JavaPlugin{
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        setupPermissions();
 		
         for(Player p : Bukkit.getOnlinePlayers()) {
 			new PlayerManager(p);
@@ -98,14 +89,19 @@ public class Bazaar extends JavaPlugin{
 				Category cat = Category.getCategory(c);
 				for(SelfBalancingBST root : cat.getAll()) {
 					for(SelfBalancingBSTNode node : root.getAllNodes(root.getRoot())) {
-						for(UUID id : node.get().keySet()) {
-							Enquiry.save(node.get().get(id));
+						for(Entry<UUID, Enquiry> entry: node.get().entrySet()) {
+							Enquiry.saveAll(entry.getValue());
 						}
 					}
 				}
 			}
 		}
 		Chat.sendMessage("Saving took " + (System.currentTimeMillis() - now) + "ms",ChatLevel.INFO);
+	}
+	
+	private void registerCommands() {
+		Chat.sendMessage("Registering Commands...", ChatLevel.INFO);
+		getCommand("bz").setExecutor(new OpenBazaarCMD());
 	}
 	
 	private boolean setupEconomy() {
@@ -119,14 +115,9 @@ public class Bazaar extends JavaPlugin{
         econ = rsp.getProvider();
         return econ != null;
     }
-    
-    private boolean setupPermissions() {
-        RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
-        perms = rsp.getProvider();
-        return perms != null;
-    }
 	
 	private void loadTemplates() throws FileNotFoundException, IOException, InvalidConfigurationException {
+		Chat.sendMessage("Loading Template...", ChatLevel.INFO);
 		Inventory inv = Bukkit.createInventory(null, 5 * 9, Files.getInvConfig().getString("inventory.name"));
 		ItemStack pane = ItemFromFile.get(Files.getInvConfig(), "inventory.background");
 		for(int i = 0; i<5; i++) {
@@ -148,8 +139,6 @@ public class Bazaar extends JavaPlugin{
 	}
 	
 	public static Economy getEconomy() {return econ;}
-    
-    public static Permission getPermissions() {return perms;}
 }
 /*
 OAK_LOG:

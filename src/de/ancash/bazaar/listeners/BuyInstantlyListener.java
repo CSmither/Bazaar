@@ -1,7 +1,5 @@
 package de.ancash.bazaar.listeners;
 
-import java.util.HashMap;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,6 +8,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import de.ancash.ilibrary.datastructures.maps.CompactMap;
+import de.ancash.ilibrary.minecraft.nbt.NBTItem;
 import de.ancash.bazaar.Bazaar;
 import de.ancash.bazaar.events.BuyInstaEvent;
 import de.ancash.bazaar.files.Files;
@@ -20,9 +20,9 @@ import de.ancash.bazaar.utils.Enquiry;
 import de.ancash.bazaar.utils.InventoryUtils;
 import de.ancash.bazaar.utils.ItemFromFile;
 import de.ancash.bazaar.utils.ItemStackUtils;
-import de.ancash.bazaar.utils.Response;
 import de.ancash.bazaar.utils.SellOffer;
-import de.tr7zw.nbtapi.NBTItem;
+
+import static de.ancash.bazaar.utils.Response.*;
 
 public class BuyInstantlyListener implements Listener {
 
@@ -42,11 +42,12 @@ public class BuyInstantlyListener implements Listener {
 		
 		int slot = e.getSlot();
 		Player p = e.getPlayer();
-		//Category cat = Category.getCategory(e.getCat());
+
 		if(e.getTitle().contains(Files.getInvConfig().getString("inventory.name"))) {
-			HashMap<String, String> placeholder = new HashMap<String, String>();
-			Inventory inv = Bukkit.createInventory(null, 4 * 9, Category.getCategory(e.getCat()).getShowcase()[Category.getSlotByID(e.getItemId() + 1)].getItemMeta().getDisplayName() + " §r-> Instant Buy");
-			SelfBalancingBST sellOffer = Category.getCategory(e.getCat()).getSellOffer(e.getItemId());
+			CompactMap<String, String> placeholder = new CompactMap<String, String>();
+			
+			Inventory inv = Bukkit.createInventory(null, 4 * 9, Category.getCategory(e.getCat()).getSubShow()[e.getShow() - 1][e.getSub() - 1].getItemMeta().getDisplayName() + " §r-> Instant Buy");
+			SelfBalancingBST sellOffer = Category.getCategory(e.getCat()).getSellOffers(e.getShow(), e.getSub());
 			SelfBalancingBSTNode lowest = sellOffer.getMin();
 			
 			inv.setContents(inv_content.clone());
@@ -57,7 +58,8 @@ public class BuyInstantlyListener implements Listener {
 			NBTItem info = new NBTItem(prepareOpt(e.getInv(), placeholder, 10, 1));
 			info.setItemStack("original", e.getInv().getItem(13));
 			info.setInteger("bazaar.category", e.getCat());
-			info.setInteger("bazaar.item.id", e.getItemId());
+			info.setInteger("bazaar.item.show", e.getShow());
+			info.setInteger("bazaar.item.sub", e.getSub());
 			inv.setItem(10, info.getItem());
 						
 			placeholder.put("%price_total%", (lowest == null ? "§cN/A" : "§6" + lowest.getKey()*64 + " coins"));
@@ -79,9 +81,9 @@ public class BuyInstantlyListener implements Listener {
 		}
 		if(e.getTitle().contains("§r-> Instant Buy") && (slot == 10 || slot == 12)) {
 			
-			SelfBalancingBST root = Category.getCategory(e.getCat()).getSellOffer(e.getItemId());
+			SelfBalancingBST root = Category.getCategory(e.getCat()).getSellOffers(e.getShow(), e.getSub());
 			if(root == null || root.isEmpty()) {
-				p.sendMessage(Response.NO_SELL_OFFER_AVAILABLE);
+				p.sendMessage(NO_SELL_OFFER_AVAILABLE);
 				return;
 			}
 			SelfBalancingBSTNode sellOffer = root.getMin();
@@ -89,21 +91,21 @@ public class BuyInstantlyListener implements Listener {
 			Category cat = Category.getCategory(e.getCat());
 			
 			if(sellOffer == null || sellOffer.get().isEmpty()) {
-				p.sendMessage(Response.NO_SELL_OFFER_AVAILABLE);
+				p.sendMessage(NO_SELL_OFFER_AVAILABLE);
 				return;
 			}
 			int amount = slot == 10 ? 1 : 64;
 			
 			
 			if(so == null) {
-				p.sendMessage(Response.NO_SELL_OFFER_AVAILABLE);
+				p.sendMessage(NO_SELL_OFFER_AVAILABLE);
 				return;
 			}
 			if(p.getInventory().firstEmpty() != -1) {
 				if(Bazaar.getEconomy().getBalance(p) >= sellOffer.getKey() * amount) {
 					if(so != null && so.getLeft() >= amount) {
 
-						InventoryUtils.addItemAmount(amount, cat.getContents()[e.getItemId() - 1].clone(), p);
+						InventoryUtils.addItemAmount(amount, cat.getOriginial(e.getShow(), e.getSub()).clone(), p);
 						Bazaar.getEconomy().withdrawPlayer(p, so.getPrice());
 						so.setLeft(so.getLeft() - amount);
 						so.addClaimable(amount);
@@ -114,7 +116,7 @@ public class BuyInstantlyListener implements Listener {
 						return;
 					}
 				} else {
-					p.sendMessage(Response.NO_MONEY);
+					p.sendMessage(NO_MONEY);
 					return;
 				}
 			}
@@ -122,7 +124,7 @@ public class BuyInstantlyListener implements Listener {
 				if(so != null && p.getInventory().firstEmpty() != -1) {
 					if(Bazaar.getEconomy().getBalance(p) >= sellOffer.getKey()) {
 						
-						//InventoryUtils.addItemAmount(1, cat.getContents()[e.getItemId() - 1].clone(), p);
+						InventoryUtils.addItemAmount(1, cat.getOriginial(e.getShow(), e.getSub()).clone(), p);
 						Bazaar.getEconomy().withdrawPlayer(p, so.getPrice());
 						so.setLeft(so.getLeft() - 1);
 						so.addClaimable(1);
@@ -139,11 +141,11 @@ public class BuyInstantlyListener implements Listener {
 							
 						}
 					} else {
-						p.sendMessage(Response.NO_MONEY);
+						p.sendMessage(NO_MONEY);
 						return;
 					}
 				} else {
-					p.sendMessage(Response.INVENTORY_FULL);
+					p.sendMessage(INVENTORY_FULL);
 					return;
 				}
 			}
@@ -152,7 +154,7 @@ public class BuyInstantlyListener implements Listener {
 		}
 	}
 
-	private static ItemStack prepareOpt(Inventory inv, HashMap<String, String> placeholder, int content, int amount) {
+	private static ItemStack prepareOpt(Inventory inv, CompactMap<String, String> placeholder, int content, int amount) {
 		ItemStack opt = inv.getItem(13).clone();
 		ItemMeta temp = opt.getItemMeta();
 		temp.setLore(inv_content[content].getItemMeta().getLore());
@@ -163,9 +165,9 @@ public class BuyInstantlyListener implements Listener {
 		return opt;
 	}
 	
-	public static ItemStack createBuyInsta(int cat, int item_id, ItemStack buyInsta, Inventory inv, Player p) {
-		SelfBalancingBST rootSellOffer= Category.getCategory(cat).getSellOffer(item_id);
-		HashMap<String, String> placeholder = new HashMap<String, String>();
+	public static ItemStack createBuyInsta(int cat, int show, int sub, ItemStack buyInsta, Inventory inv, Player p) {
+		SelfBalancingBST rootSellOffer= Category.getCategory(cat).getSellOffers(show, sub);
+		CompactMap<String, String> placeholder = new CompactMap<String, String>();
 		SelfBalancingBSTNode min = rootSellOffer.getMin();
 		placeholder.put("%offers_price_lowest%", (!rootSellOffer.isEmpty() ? (min.get().size() != 0 ? "§6" + min.getKey() + " coins" : "§cN/A"): "§cN/A"));
 		placeholder.put("%offers_price_lowest_stack%", (!rootSellOffer.isEmpty() ? (min.get().size() != 0 ? "§6" + min.getKey()*64 + " coins" : "§cN/A"): "§cN/A"));

@@ -1,7 +1,6 @@
 package de.ancash.bazaar.listeners;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.UUID;
 
 import org.bukkit.Material;
@@ -13,6 +12,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import de.ancash.ilibrary.datastructures.maps.CompactMap;
+import de.ancash.ilibrary.datastructures.tuples.ImmutableTriplet;
+import de.ancash.ilibrary.datastructures.tuples.Tuple;
+import de.ancash.ilibrary.minecraft.nbt.NBTItem;
 import de.ancash.bazaar.Bazaar;
 import de.ancash.bazaar.files.Files;
 import de.ancash.bazaar.management.Category;
@@ -25,10 +28,10 @@ import de.ancash.bazaar.utils.InventoryUtils;
 import de.ancash.bazaar.utils.ItemFromFile;
 import de.ancash.bazaar.utils.ItemStackUtils;
 import de.ancash.bazaar.utils.MathsUtils;
-import de.ancash.bazaar.utils.Response;
 import de.ancash.bazaar.utils.Chat.ChatLevel;
 import de.ancash.bazaar.utils.Enquiry;
-import de.tr7zw.nbtapi.NBTItem;
+
+import static de.ancash.bazaar.utils.Response.*;
 
 public class ManageEnquiriesListener {
 
@@ -64,21 +67,21 @@ public class ManageEnquiriesListener {
 		if(click == null || click.getType().equals(Material.AIR)) return;
 		if(slot <= 9 || slot >= 35 || slot == 18 || slot == 17 || slot == 27 || slot == 26) return;
 		NBTItem nbt = new NBTItem(click);
-		collect(nbt.getDouble("price"), nbt.getInteger("category"), nbt.getInteger("item_id"), nbt.getString("id"), p, EnquiryTypes.valueOf(nbt.getString("type")), slot);
+		collect(nbt.getDouble("price"), nbt.getInteger("category"), nbt.getInteger("show"), nbt.getInteger("sub"), nbt.getString("id"), p, EnquiryTypes.valueOf(nbt.getString("type")), slot);
 	}
 	
-	private static void collect(double price, int category, int id, String uuid, Player p, EnquiryTypes type, int slot) {
+	private static void collect(double price, int category, int show, int sub, String uuid, Player p, EnquiryTypes type, int slot) {
 		if(category == 0) {
 			openInv(p);
 			return;
 		}
 		Category cat = Category.getCategory(category);
 		SelfBalancingBST bst = null;
-		if(type.equals(EnquiryTypes.BUY_ORDER)) bst = cat.getBuyOrder(id);
-		if(type.equals(EnquiryTypes.SELL_OFFER)) bst = cat.getSellOffer(id);
+		if(type.equals(EnquiryTypes.BUY_ORDER)) bst = cat.getBuyOrders(show, sub);
+		if(type.equals(EnquiryTypes.SELL_OFFER)) bst = cat.getSellOffers(show, sub);
 		
 		if(bst == null) {
-			Chat.sendMessage("Player Tried To Collect Invalid Enquiry! Cat: " + category + " ID: " + id + " UUID: " + uuid, ChatLevel.WARN);
+			Chat.sendMessage("Player Tried To Collect Invalid Enquiry! Cat: " + category + " ID: " + show + ", " + sub + " UUID: " + uuid, ChatLevel.WARN);
 			openInv(p);
 			return;
 		}
@@ -88,11 +91,11 @@ public class ManageEnquiriesListener {
 		if(node != null) {
 			Enquiry e = node.get(UUID.fromString(uuid));
 			if(e == null) {
-				collectFromFile(price, category, id, uuid, p, type);
+				collectFromFile(price, category, show, sub, uuid, p, type);
 				return;
 			}
 			if(!e.hasClaimable()) {
-				p.sendMessage(Response.NOTHIN_TO_CLAIM);
+				p.sendMessage(NOTHIN_TO_CLAIM);
 				openInv(p);
 				return;
 			}
@@ -101,14 +104,14 @@ public class ManageEnquiriesListener {
 			case SELL_OFFER:
 				claimable = e.claim();
 				Bazaar.getEconomy().depositPlayer(p, claimable * price);
-				p.sendMessage("§6Bazaar! §7Claimed §6" + MathsUtils.round(claimable * price, 2) + " coins §7from selling §a" + claimable + "§7x " + Category.getCategory(category).getShowcase()[Category.getSlotByID(id)].getItemMeta().getDisplayName() + " §7at §6" + price + " §7each!");
+				p.sendMessage("§6Bazaar! §7Claimed §6" + MathsUtils.round(claimable * price, 2) + " coins §7from selling §a" + claimable + "§7x " + Category.getCategory(category).getSubShow()[show - 1][sub - 1].getItemMeta().getDisplayName() + " §7at §6" + price + " §7each!");
 				Enquiry.save(e);
 				Enquiry.checkEnquiry(e);
 				break;
 			case BUY_ORDER:
 				int freeSlots = InventoryUtils.getFreeSlots(p);
 				if(freeSlots == 0) {
-					p.sendMessage(Response.INVENTORY_FULL);
+					p.sendMessage(INVENTORY_FULL);
 					openInv(p);
 					return;
 				}
@@ -121,8 +124,8 @@ public class ManageEnquiriesListener {
 				} else {
 					adding = e.claim();
 				}
-				InventoryUtils.addItemAmount(adding, Category.getCategory(category).getItem(id).clone(), p);
-				p.sendMessage("§6Bazaar! §7Claimed §a" + adding + "x  " + Category.getCategory(category).getShowcase()[Category.getSlotByID(id)].getItemMeta().getDisplayName() + " §7worth §6" + (adding * price) + " coins §7bought for §6" + price + " §7each!");
+				InventoryUtils.addItemAmount(adding, Category.getCategory(category).getOriginial(show, sub), p);
+				p.sendMessage("§6Bazaar! §7Claimed §a" + adding + "x  " + Category.getCategory(category).getSubShow()[show - 1][sub - 1].getItemMeta().getDisplayName() + " §7worth §6" + (adding * price) + " coins §7bought for §6" + price + " §7each!");
 				Enquiry.save(e);
 				Enquiry.checkEnquiry(e);
 				break;
@@ -132,16 +135,16 @@ public class ManageEnquiriesListener {
 			openInv(p);
 			return;
 		} else {
-			collectFromFile(price, category, id, uuid, p, type);
+			collectFromFile(price, category, show, sub, uuid, p, type);
 		}
 		
 	}
 	
-	private static void collectFromFile(double price, int category, int id, String uuid, Player p, EnquiryTypes type) {
+	private static void collectFromFile(double price, int category, int show, int sub, String uuid, Player p, EnquiryTypes type) {
 		File f = new File("plugins/Bazaar/player/" + p.getUniqueId().toString() + "/" + (type.equals(EnquiryTypes.BUY_ORDER) ? "buy_order.yml" : "sell_offer.yml"));
 		FileConfiguration fc = YamlConfiguration.loadConfiguration(f);
 		if(fc.getInt(uuid + ".claimable") == 0) {
-			p.sendMessage(Response.NOTHIN_TO_CLAIM);
+			p.sendMessage(NOTHIN_TO_CLAIM);
 			openInv(p);
 			return;
 		}
@@ -150,14 +153,14 @@ public class ManageEnquiriesListener {
 		case SELL_OFFER:
 			claimable = fc.getInt(uuid + ".claimable");
 			Bazaar.getEconomy().depositPlayer(p, claimable * price);
-			p.sendMessage("§6Bazaar! §7Claimed §6" + MathsUtils.round(claimable * price, 2) + " coins §7from selling §a" + claimable + "§7x " + Category.getCategory(category).getShowcase()[Category.getSlotByID(id)].getItemMeta().getDisplayName() + " §7at §6" + price + " §7each!");
+			p.sendMessage("§6Bazaar! §7Claimed §6" + MathsUtils.round(claimable * price, 2) + " coins §7from selling §a" + claimable + "§7x " + Category.getCategory(category).getSubShow()[show - 1][sub - 1].getItemMeta().getDisplayName() + " §7at §6" + price + " §7each!");
 			fc.set(uuid + ".claimable", 0);
 			Enquiry.delete(p.getUniqueId(), uuid, type);
 			break;
 		case BUY_ORDER:
 			int freeSlots = InventoryUtils.getFreeSlots(p);
 			if(freeSlots == 0) {
-				p.sendMessage(Response.INVENTORY_FULL);
+				p.sendMessage(INVENTORY_FULL);
 				openInv(p);
 				return;
 			}
@@ -171,8 +174,8 @@ public class ManageEnquiriesListener {
 				adding = claimable;
 			}
 			if(claimable - adding == 0) Enquiry.delete(p.getUniqueId(), uuid, type);
-			InventoryUtils.addItemAmount(adding, Category.getCategory(category).getItem(id).clone(), p);
-			p.sendMessage("§6Bazaar! §7Claimed §a" + adding + "x  " + Category.getCategory(category).getShowcase()[Category.getSlotByID(id)].getItemMeta().getDisplayName() + " §7worth §6" + (adding * price) + " coins §7bought for §6" + price + " §7each!");
+			InventoryUtils.addItemAmount(adding, Category.getCategory(category).getOriginial(show, sub), p);
+			p.sendMessage("§6Bazaar! §7Claimed §a" + adding + "x  " + Category.getCategory(category).getSubShow()[show - 1][sub - 1].getItemMeta().getDisplayName() + " §7worth §6" + (adding * price) + " coins §7bought for §6" + price + " §7each!");
 			break;
 		default:
 			break;
@@ -186,21 +189,20 @@ public class ManageEnquiriesListener {
 	private static void openInv(Player p) {
 		Inventory mE = PlayerManager.get(p.getUniqueId()).getManageEnquiries();
 		mE.setContents(manageEnquiries.clone());
-		HashMap<String, HashMap<String, Number>> sellOffer = PlayerManager.get(p.getUniqueId()).getSellOffer();
-		HashMap<String, HashMap<String, Number>> buyOrder = PlayerManager.get(p.getUniqueId()).getBuyOrder();
+		CompactMap<String, CompactMap<String, Number>> sellOffer = PlayerManager.get(p.getUniqueId()).getSellOffer();
+		CompactMap<String, CompactMap<String, Number>> buyOrder = PlayerManager.get(p.getUniqueId()).getBuyOrder();
 		
 		for(String key : sellOffer.keySet()) {
-			int cat = (int) sellOffer.get(key).get("category");
-			int id = (int) sellOffer.get(key).get("item_id");
-			Category category = Category.getCategory(cat);
-			ItemStack is = category.getShowcase()[Category.getSlotByID(id)].clone();
+			ImmutableTriplet<Integer, Integer, Integer> infos = Tuple.immutableOf((int) sellOffer.get(key).get("category"),(int)  sellOffer.get(key).get("show"),(int)  sellOffer.get(key).get("sub"));
+			Category category = Category.getCategory(infos.getFirst());
+			ItemStack is = category.getSubShow()[infos.getSecond() - 1][infos.getThird() - 1].clone();
 			ItemMeta im = is.getItemMeta();
 			im.setDisplayName(manageSellOffer.getItemMeta().getDisplayName().replace("%displayname%", im.getDisplayName()));
 			im.setLore(manageSellOffer.getItemMeta().getLore());
 			
 			is.setItemMeta(im);
 			
-			HashMap<String, String> placeholder = new HashMap<String, String>();
+			CompactMap<String, String> placeholder = new CompactMap<String, String>();
 			double price = (double) sellOffer.get(key).get("price");
 			int total = (int) sellOffer.get(key).get("total");
 			int left = (int) sellOffer.get(key).get("left");
@@ -213,8 +215,9 @@ public class ManageEnquiriesListener {
 			placeholder.put("%coins_to_claim%", "" + (claimable * price));
 			
 			NBTItem nbt = new NBTItem(ItemStackUtils.replacePlaceholder(is, placeholder));
-			nbt.setInteger("category", cat);
-			nbt.setInteger("item_id", id);
+			nbt.setInteger("category", infos.getFirst());
+			nbt.setInteger("show", infos.getSecond());
+			nbt.setInteger("sub", infos.getThird());
 			nbt.setString("id", key);
 			nbt.setString("type", "SELL_OFFER");
 			nbt.setDouble("price", price);
@@ -223,17 +226,16 @@ public class ManageEnquiriesListener {
 		}
 		
 		for(String key : buyOrder.keySet()) {
-			int cat = (int) buyOrder.get(key).get("category");
-			int id = (int) buyOrder.get(key).get("item_id");
-			Category category = Category.getCategory(cat);
-			ItemStack is = category.getShowcase()[Category.getSlotByID(id)].clone();
+			ImmutableTriplet<Integer, Integer, Integer> infos = Tuple.immutableOf((int) buyOrder.get(key).get("category"),(int)  buyOrder.get(key).get("show"),(int)  buyOrder.get(key).get("sub"));
+			Category category = Category.getCategory(infos.getFirst());
+			ItemStack is = category.getSubShow()[infos.getSecond() - 1][infos.getThird() - 1].clone();
 			ItemMeta im = is.getItemMeta();
 			im.setDisplayName(manageBuyOrder.getItemMeta().getDisplayName().replace("%displayname%", im.getDisplayName()));
 			im.setLore(manageBuyOrder.getItemMeta().getLore());
 			
 			is.setItemMeta(im);
 			
-			HashMap<String, String> placeholder = new HashMap<String, String>();
+			CompactMap<String, String> placeholder = new CompactMap<String, String>();
 			double price = (double) buyOrder.get(key).get("price");
 			int total = (int) buyOrder.get(key).get("total");
 			int left = (int) buyOrder.get(key).get("left");
@@ -246,8 +248,9 @@ public class ManageEnquiriesListener {
 			placeholder.put("%items_to_claim%", "" + (int) (claimable));
 			
 			NBTItem nbt = new NBTItem(ItemStackUtils.replacePlaceholder(is, placeholder));
-			nbt.setInteger("category", cat);
-			nbt.setInteger("item_id", id);
+			nbt.setInteger("category", infos.getFirst());
+			nbt.setInteger("show", infos.getSecond());
+			nbt.setInteger("sub", infos.getThird());
 			nbt.setString("id", key);
 			nbt.setString("type", "BUY_ORDER");
 			nbt.setDouble("price", price);

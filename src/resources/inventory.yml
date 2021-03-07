@@ -31,7 +31,7 @@ inventory:
       meta:
          data: 7
          displayname: " "
-
+   
    #
    createSellOffer:
       confirm:

@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Material;
@@ -15,11 +14,12 @@ import org.bukkit.inventory.meta.SkullMeta;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
+import de.ancash.ilibrary.datastructures.maps.CompactMap;
+
 public class ItemStackUtils {
 
 	@SuppressWarnings("deprecation")
 	public static String itemStackToString(ItemStack is) {
-		//converting to string
 		StringBuilder test = new StringBuilder();
 		
 		if(is == null || is.getType().equals(Material.AIR)) return "";
@@ -45,6 +45,9 @@ public class ItemStackUtils {
 				}
 				if(tex != null) test.append(",tx=" + tex);
 			}
+			if(im.hasEnchants()) {
+				test.append(",enchs=" + im.getEnchants().toString());
+			}
 			test.append("]");
 		} else {
 			test.append("[t=" + is.getType().toString() + ",d=" + is.getData().getData() + "]");
@@ -68,7 +71,7 @@ public class ItemStackUtils {
 		return texture;
 	}
 	
-	public static ItemStack replacePlaceholder(ItemStack is, HashMap<String, String> placeholder) {
+	public static ItemStack replacePlaceholder(ItemStack is, CompactMap<String, String> placeholder) {
 		ItemMeta im = is.getItemMeta();
 		List<String> lore = new ArrayList<String>();
 		for(String str : im.getLore()) {

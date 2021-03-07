@@ -21,6 +21,7 @@ public class Files {
 	private static FileConfiguration cfg = YamlConfiguration.loadConfiguration(config);
 	
 	public Files(Plugin plugin) {
+		Chat.sendMessage("Loading Files... ", ChatLevel.INFO);
 		try {
 			if(!config.exists()) {
 				FileUtils.copyInputStreamToFile(plugin.getResource("resources/config.yml"), config);

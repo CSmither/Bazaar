@@ -4,14 +4,14 @@ import java.util.UUID;
 
 public class BuyOrder extends Enquiry{
 	
-	public BuyOrder(int amount, double price, UUID id, int category, int item) {
-		super(amount, price, id, category, item);
+	public BuyOrder(int amount, double price, UUID id, int category, int a, int b) {
+		super(amount, price, id, category, a, b);
 		type = Enquiry.EnquiryTypes.BUY_ORDER;
-		Enquiry.saveAll(this);
+		saveAll(this);
 	}
 	
-	public BuyOrder(int amount, double price, UUID owner, int category, int item_id, int left, long timestamp, UUID id, int claimable) {
-		super(amount, price, owner, category, item_id, left, timestamp, id, claimable);
+	public BuyOrder(int amount, double price, UUID owner, int category, int a, int b, int left, long timestamp, UUID id, int claimable) {
+		super(amount, price, owner, category, a, b, left, timestamp, id, claimable);
 		type = Enquiry.EnquiryTypes.BUY_ORDER;
 	}
 	

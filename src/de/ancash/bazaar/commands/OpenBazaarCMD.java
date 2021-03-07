@@ -20,7 +20,7 @@ public class OpenBazaarCMD implements CommandExecutor{
 			if(true) {
 				if(args[0].toLowerCase().equals("open")) {
 					PlayerManager pm = PlayerManager.get(p.getUniqueId());
-					pm.getBazaarMain().setContents(Category.getCategory(1).getShowcase().clone());
+					pm.getBazaarMain().setContents(Category.getCategory(1).getShow());
 					p.openInventory(BazaarInvClick.prepareMain(pm.getBazaarMain(), 1, 0, (Player) sender));
 				}
 			}

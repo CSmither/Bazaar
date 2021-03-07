@@ -7,7 +7,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import de.ancash.bazaar.utils.BuyOrder;
 import de.ancash.bazaar.utils.Enquiry;
-import de.ancash.bazaar.utils.Pair;
+import de.ancash.ilibrary.datastructures.tuples.Duplet;
+import de.ancash.ilibrary.datastructures.tuples.Tuple;
 
 /* Class SelfBalancingBinarySearchTree */
 
@@ -28,6 +29,12 @@ public class SelfBalancingBST {
     		}
     	}
     	return all;
+    }
+    
+    public int getEnquiryCount() {
+    	int enquiries = 0;
+    	for(SelfBalancingBSTNode node : getAllNodes(root)) enquiries += node.get().size();
+    	return enquiries;
     }
     
     /* Constructor */
@@ -426,19 +433,19 @@ public class SelfBalancingBST {
         return kthSmallest(root, i, k);
     }
     
-    public Pair<Integer, Double> processInstaSell(int amount) {
-    	return processInstaSell(amount, new Pair<Integer, Double>(0, 0.0));
+    public Duplet<Integer, Double> processInstaSell(int amount) {
+    	return processInstaSell(amount, (Duplet<Integer, Double>) Tuple.of(0, 0D));
     }
     
-    private Pair<Integer, Double> processInstaSell(int amount, Pair<Integer, Double> pair) {
+    private Duplet<Integer, Double> processInstaSell(int amount, Duplet<Integer, Double> pair) {
     	if(isEmpty()) return pair;
     	SelfBalancingBSTNode node = getMax();
     	BuyOrder bo = (BuyOrder) node.getByTimeStamp();
     	if(bo == null) return pair;
     	
     	int reducable = bo.getLeft() > amount ? amount : bo.getLeft();
-    	pair.setKey(pair.getKey() + reducable);
-    	pair.setValue(pair.getValue() + (bo.getPrice() * reducable));
+    	pair.setFirst(pair.getFirst() + reducable);
+    	pair.setSecond(pair.getSecond() + (bo.getPrice() * reducable));
     	bo.reduce(reducable);
     	bo.addClaimable(reducable);
     	if(bo.getLeft() == 0) {

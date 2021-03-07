@@ -5,6 +5,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import de.ancash.ilibrary.datastructures.tuples.Duplet;
+import de.ancash.ilibrary.datastructures.tuples.Tuple;
+
 public class InventoryUtils {
 
 	public static int getFreeSlots(Player p) {
@@ -69,13 +72,11 @@ public class InventoryUtils {
 		return i;
 	}
 	
-	public static Pair<Double, String> getSpread(double minSellOfferPrice, double maxBuyOrderPrice, int percentage) {
-		Pair<Double, String> pair = new Pair<Double, String>(null, null);
+	public static Duplet<Double, String> getSpread(double minSellOfferPrice, double maxBuyOrderPrice, int percentage) {
 		StringBuilder builder = new StringBuilder();
 		double spread = MathsUtils.round(minSellOfferPrice - maxBuyOrderPrice, 2);
 		builder.append("§6" + minSellOfferPrice + " §7- §6" + maxBuyOrderPrice + " §7= §6" + spread + " coins");
-		pair.setValue(builder.toString());
-		pair.setKey(spread*((double) percentage/100));
+		Duplet<Double, String> pair = Tuple.of(spread*((double) percentage/100), builder.toString());
 		return pair;
 	}
 }

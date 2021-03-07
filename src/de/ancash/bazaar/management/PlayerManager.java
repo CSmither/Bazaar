@@ -2,7 +2,6 @@ package de.ancash.bazaar.management;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -13,12 +12,13 @@ import org.bukkit.inventory.Inventory;
 
 import de.ancash.bazaar.utils.BuyOrder;
 import de.ancash.bazaar.utils.Chat;
-import de.ancash.bazaar.utils.Chat.ChatLevel;
 import de.ancash.bazaar.utils.SellOffer;
+import de.ancash.bazaar.utils.Chat.ChatLevel;
+import de.ancash.ilibrary.datastructures.maps.CompactMap;
 
 public final class PlayerManager {
 	
-	private static HashMap<UUID, PlayerManager> registered = new HashMap<UUID, PlayerManager>();
+	private static CompactMap<UUID, PlayerManager> registered = new CompactMap<UUID, PlayerManager>();
 	
 	private final UUID id;
 	private final File sellOfferFile;
@@ -29,7 +29,7 @@ public final class PlayerManager {
 	private Inventory at_what_price_are_you_selling = Bukkit.createInventory(null, 36, "At what price are you selling?");
 	private Inventory confirm_sell_offer = Bukkit.createInventory(null, 36, "Confirm Sell Offer");
 	private Inventory manageEnquiries = Bukkit.createInventory(null, 5 * 9, "Your Bazaar Enquiries");
-	
+			
 	public Inventory getConfirmSellOffer() {return confirm_sell_offer;}
 	public Inventory getAtWhatPriceAreYouSelling() {return at_what_price_are_you_selling;}
 	public Inventory getHowMuchDoYouWantToPay() {return how_much_do_you_want_to_pay;}
@@ -42,21 +42,25 @@ public final class PlayerManager {
 		this.id = p.getUniqueId();
 		sellOfferFile = new File("plugins/Bazaar/player/" + p.getUniqueId().toString() + "/sell_offer.yml");
 		buyOrderFile = new File("plugins/Bazaar/player/" + p.getUniqueId().toString() + "/buy_order.yml");
+		
 		if(!sellOfferFile.exists()) {
+			sellOfferFile.mkdirs();
+			sellOfferFile.delete();
 			try {
-				sellOfferFile.mkdirs();
-				sellOfferFile.delete();
 				sellOfferFile.createNewFile();
 			} catch (IOException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
+		
 		if(!buyOrderFile.exists()) {
+			buyOrderFile.mkdirs();
+			buyOrderFile.delete();
 			try {
-				buyOrderFile.mkdirs();
-				buyOrderFile.delete();
 				buyOrderFile.createNewFile();
 			} catch (IOException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -85,9 +89,11 @@ public final class PlayerManager {
 	
 	public int getClaimableItems() {
 		int claimable = 0;
+		
 		FileConfiguration fc = YamlConfiguration.loadConfiguration(buyOrderFile);
+		
 		for(String id : fc.getKeys(false)) {
-			SelfBalancingBST root = Category.getCategory(fc.getInt(id + ".category")).getBuyOrder(fc.getInt(id + ".item_id"));
+			SelfBalancingBST root = Category.getCategory(fc.getInt(id + ".category")).getBuyOrders(fc.getInt(id + ".show"), fc.getInt(id + ".sub"));
 			SelfBalancingBSTNode buyOrder = root.get(fc.getDouble(id + ".price"), root.getRoot());
 			
 			if(buyOrder != null && buyOrder.get(UUID.fromString(id)) != null) {
@@ -103,7 +109,7 @@ public final class PlayerManager {
 		double claimable = 0;
 		FileConfiguration fc = YamlConfiguration.loadConfiguration(sellOfferFile);
 		for(String id : fc.getKeys(false)) {
-			SelfBalancingBST root = Category.getCategory(fc.getInt(id + ".category")).getSellOffer(fc.getInt(id + ".item_id"));
+			SelfBalancingBST root = Category.getCategory(fc.getInt(id + ".category")).getSellOffers(fc.getInt(id + ".show"), fc.getInt(id + ".sub"));
 			SelfBalancingBSTNode sellOffer = root.get(fc.getDouble(id + ".price"), root.getRoot());
 			
 			if(sellOffer != null && sellOffer.get(UUID.fromString(id)) != null) {
@@ -115,8 +121,8 @@ public final class PlayerManager {
 		return claimable;
 	}
 	
-	public HashMap<String, HashMap<String, Number>> getSellOffer() {
-		HashMap<String, HashMap<String, Number>> allSellOffer = new HashMap<String, HashMap<String, Number>>();
+	public CompactMap<String, CompactMap<String, Number>> getSellOffer() {
+		CompactMap<String, CompactMap<String, Number>> allSellOffer = new CompactMap<String, CompactMap<String, Number>>();
 		FileConfiguration fc = YamlConfiguration.loadConfiguration(sellOfferFile);
 		for(String id : fc.getKeys(false)) {
 			int total = fc.getInt(id + ".amount");
@@ -124,18 +130,22 @@ public final class PlayerManager {
 			int category = fc.getInt(id + ".category");
 			int item_id = fc.getInt(id + ".item_id");
 			int claimable = fc.getInt(id + ".claimable");
+			int show = fc.getInt(id + ".show");
+			int sub = fc.getInt(id + ".sub");
 			
-			HashMap<String, Number> datas = new HashMap<String, Number>();
+			CompactMap<String, Number> datas = new CompactMap<String, Number>();
 			datas.put("total", total);
 			datas.put("price", price);
 			datas.put("category", category);
 			datas.put("item_id", item_id);
+			datas.put("show", show);
+			datas.put("sub", sub);
 			
 			if(fc.getInt(id + ".left") == 0) {
 				datas.put("left", 0);
 				datas.put("claimable", claimable);
 			} else {
-				SelfBalancingBST root = Category.getCategory(category).getSellOffer(item_id);
+				SelfBalancingBST root = Category.getCategory(category).getSellOffers(show, sub);
 				SelfBalancingBSTNode sellOffer = root.get(fc.getDouble(id + ".price"), root.getRoot());
 				SellOffer sO = (SellOffer) sellOffer.get(UUID.fromString(id));
 				if(sO == null) {
@@ -150,8 +160,8 @@ public final class PlayerManager {
 		return allSellOffer;
 	}
 	
-	public HashMap<String, HashMap<String, Number>> getBuyOrder() {
-		HashMap<String, HashMap<String, Number>> allBuyOrder = new HashMap<String, HashMap<String, Number>>();
+	public CompactMap<String, CompactMap<String, Number>> getBuyOrder() {
+		CompactMap<String, CompactMap<String, Number>> allBuyOrder = new CompactMap<String, CompactMap<String, Number>>();
 		FileConfiguration fc = YamlConfiguration.loadConfiguration(buyOrderFile);
 		for(String id : fc.getKeys(false)) {
 			int total = fc.getInt(id + ".amount");
@@ -159,18 +169,22 @@ public final class PlayerManager {
 			int category = fc.getInt(id + ".category");
 			int item_id = fc.getInt(id + ".item_id");
 			int claimable = fc.getInt(id + ".claimable");
+			int show = fc.getInt(id + ".show");
+			int sub = fc.getInt(id + ".sub");
 			
-			HashMap<String, Number> datas = new HashMap<String, Number>();
+			CompactMap<String, Number> datas = new CompactMap<String, Number>();
 			datas.put("total", total);
 			datas.put("price", price);
 			datas.put("category", category);
 			datas.put("item_id", item_id);
+			datas.put("show", show);
+			datas.put("sub", sub);
 			
 			if(fc.getInt(id + ".left") == 0) {
 				datas.put("left", 0);
 				datas.put("claimable", claimable);
 			} else {
-				SelfBalancingBST root = Category.getCategory(category).getBuyOrder(item_id);
+				SelfBalancingBST root = Category.getCategory(category).getBuyOrders(show, sub);
 				SelfBalancingBSTNode buyOrder = root.get(fc.getDouble(id + ".price"), root.getRoot());
 				if(buyOrder == null || buyOrder.get(UUID.fromString(id)) == null) {
 					Chat.sendMessage("NPE While Getting All Enquiries For A Player! ID: " + id, ChatLevel.WARN);
