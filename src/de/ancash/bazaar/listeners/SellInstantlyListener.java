@@ -28,7 +28,7 @@ public class SellInstantlyListener implements Listener{
 		}
 		Category cat = Category.getCategory(e.getCat());
 		SelfBalancingBST rootBuyOrder = cat.getBuyOrders(e.getShow(), e.getSub());
-		int toSell = InventoryUtils.getContentAmount(e.getPlayer().getInventory(), cat.getOriginial(e.getShow(), e.getCat()));
+		int toSell = InventoryUtils.getContentAmount(e.getPlayer().getInventory(), cat.getOriginial(e.getShow(), e.getSub()));
 		if(toSell == 0) {
 			e.getPlayer().sendMessage(Response.NO_ITEMS_TO_SELL);
 		} else if(rootBuyOrder == null || rootBuyOrder.isEmpty()) {
@@ -36,7 +36,8 @@ public class SellInstantlyListener implements Listener{
 			} else {
 				Duplet<Integer, Double> pair = rootBuyOrder.processInstaSell(toSell);
 				Bazaar.getEconomy().depositPlayer(e.getPlayer(), pair.getSecond());
-				InventoryUtils.removeItemAmount(pair.getFirst(), cat.getOriginial(e.getShow(), e.getCat()), e.getPlayer());
+				System.out.println(cat.getOriginial(e.getShow(), e.getSub()));
+				InventoryUtils.removeItemAmount(pair.getFirst(), cat.getOriginial(e.getShow(), e.getSub()), e.getPlayer());
 			}
 	}
 	

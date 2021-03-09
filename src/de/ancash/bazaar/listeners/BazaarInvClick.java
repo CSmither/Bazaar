@@ -150,6 +150,7 @@ public class BazaarInvClick implements Listener{
 			if(e.getInventory().getSize() == 36 && (slot > 8 && slot < 18) && e.getView().getTitle().split("->").length == 2) {
 				NBTItem info = new NBTItem(e.getInventory().getItem(e.getSlot()));
 				int cat = info.getInteger("bazaar.category");
+				if(cat == 0) return;
 				int show = info.getInteger("bazaar.item.show");
 				int sub = info.getInteger("bazaar.item.sub");
 				p.openInventory(prepareInfo(Bukkit.createInventory(null, 4 * 9, INVENTORY_NAME + " -> " + Category.getCategory(cat).getShow()[Category.getSlotByID(show)].getItemMeta().getDisplayName()+ " -> " + e.getInventory().getItem(e.getSlot()).getItemMeta().getDisplayName()), cat, show, sub, p));

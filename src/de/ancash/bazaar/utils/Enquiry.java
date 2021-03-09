@@ -82,7 +82,6 @@ public class Enquiry implements Cloneable{
 		this.id = UUID.randomUUID();
 		this.claimable = 0;
 		this.time_stamp = System.currentTimeMillis();
-		//saveAll(this);
 	}
 	
 	public Enquiry(int amount, double price, UUID owner, int category, int a, int b, int left, long timestamp, UUID id, int claimable) {
@@ -255,7 +254,6 @@ public class Enquiry implements Cloneable{
 		if(node != null && node.get().size() == 0) root.deleteKey(e.getPrice());
 		Player p = Bukkit.getPlayer(e.getOwner());
 		if(e.getLeft() == 0) {
-			//saveAll(e);
 			if(p != null) {
 				if(e instanceof SellOffer) {
 					String name = cat.getSubShow()[e.getShow() - 1][e.getSub() - 1].getItemMeta().getDisplayName();
@@ -359,19 +357,6 @@ public class Enquiry implements Cloneable{
 		save(so);
 		checkEnquiry(bo);
 		checkEnquiry(so);
-		FileConfiguration fc = YamlConfiguration.loadConfiguration(new File("plugins/Bazaar/player/" + bo.getOwner() + "/buy_order.yml"));
-		try {
-			fc.load(new File("plugins/Bazaar/player/" + bo.getOwner() + "/buy_order.yml"));
-		} catch (IOException | InvalidConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-			fc.save(new File("plugins/Bazaar/player/" + bo.getOwner() + "/buy_order.yml"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	
 	public boolean reduce(int subtract) {

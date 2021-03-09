@@ -56,7 +56,12 @@ public class InventoryUtils {
 		for(int s = 0; s<p.getInventory().getSize(); s++) {
 			if(ItemStackUtils.itemStackToString(is).equals(ItemStackUtils.itemStackToString(p.getInventory().getItem(s)))) {
 				while(i > 0 && p.getInventory().getItem(s) != null && p.getInventory().getItem(s).getAmount() > 0) {
-					p.getInventory().getItem(s).setAmount(p.getInventory().getItem(s).getAmount() - 1);
+					ItemStack cont = p.getInventory().getItem(s);
+					if(cont.getAmount() == 1) {
+						p.getInventory().setItem(s, null);
+					} else {
+						cont.setAmount(cont.getAmount() - 1);
+					}
 					i--;
 				}
 				if(i == 0) break;
@@ -66,9 +71,15 @@ public class InventoryUtils {
 	
 	public static int getContentAmount(Inventory inv, ItemStack is) {
 		int i = 0;
-		for(ItemStack cont : inv.getContents()) {
+		for(int t = 0; t<inv.getSize(); t++) {
+			ItemStack cont = inv.getItem(t);
+			if(cont == null || cont.getType().equals(Material.AIR)) continue;
 			if(ItemStackUtils.itemStackToString(is).equals(ItemStackUtils.itemStackToString(cont))) i = i + cont.getAmount();
 		}
+		/*for(ItemStack cont : inv.getContents()) {
+			if(cont == null) continue;
+			if(ItemStackUtils.itemStackToString(is).equals(ItemStackUtils.itemStackToString(cont))) i = i + cont.getAmount();
+		}*/
 		return i;
 	}
 	
