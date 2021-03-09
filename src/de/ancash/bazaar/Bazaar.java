@@ -20,11 +20,11 @@ import de.ancash.bazaar.commands.OpenBazaarCMD;
 import de.ancash.bazaar.files.Files;
 import de.ancash.bazaar.listeners.Listeners;
 import de.ancash.bazaar.management.Category;
+import de.ancash.bazaar.management.Enquiry;
 import de.ancash.bazaar.management.PlayerManager;
 import de.ancash.bazaar.management.SelfBalancingBST;
 import de.ancash.bazaar.management.SelfBalancingBSTNode;
 import de.ancash.bazaar.utils.Chat;
-import de.ancash.bazaar.utils.Enquiry;
 import de.ancash.bazaar.utils.Chat.ChatLevel;
 import de.ancash.bazaar.utils.InventoryTemplates;
 import de.ancash.bazaar.utils.ItemFromFile;
@@ -90,12 +90,13 @@ public class Bazaar extends JavaPlugin{
 				for(SelfBalancingBST root : cat.getAll()) {
 					for(SelfBalancingBSTNode node : root.getAllNodes(root.getRoot())) {
 						for(Entry<UUID, Enquiry> entry: node.get().entrySet()) {
-							Enquiry.saveAll(entry.getValue());
+							Enquiry.saveAll(entry.getValue(), true);
 						}
 					}
 				}
 			}
 		}
+		Enquiry.stop();
 		Chat.sendMessage("Saving took " + (System.currentTimeMillis() - now) + "ms",ChatLevel.INFO);
 	}
 	

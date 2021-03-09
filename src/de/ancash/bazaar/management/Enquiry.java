@@ -1,4 +1,4 @@
-package de.ancash.bazaar.utils;
+package de.ancash.bazaar.management;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,11 +13,11 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import de.ancash.bazaar.management.Category;
-import de.ancash.bazaar.management.SelfBalancingBST;
-import de.ancash.bazaar.management.SelfBalancingBSTNode;
+import de.ancash.bazaar.utils.BuyOrder;
+import de.ancash.bazaar.utils.Chat;
+import de.ancash.bazaar.utils.SellOffer;
 import de.ancash.bazaar.utils.Chat.ChatLevel;
-import de.ancash.ilibrary.yaml.configuration.file.YamlFile;
+import de.ancash.ilibrary.datastructures.maps.CompactMap;
 
 public class Enquiry implements Cloneable{
 	
@@ -97,6 +97,8 @@ public class Enquiry implements Cloneable{
 		this.claimable = claimable;
 	}
 	
+	static CompactMap<File, FileConfiguration> alreadyLoaded = new CompactMap<File, FileConfiguration>();
+	
 	@Override
 	public String toString() {
 		return "cat=" + getCategory() + ", show=" + getShow() + ", sub=" + getSub() + ", price=" + getPrice() + ", amt=" + getAmount() + ", left=" + getLeft() + ", claimable=" + getClaimable();
@@ -132,14 +134,27 @@ public class Enquiry implements Cloneable{
 			sell_offer.forEach(e -> Enquiry.insert(e));
 			count = count + sell_offer.size();
 			
-			try {
+			alreadyLoaded.put(yamlBuyOrder, fcBO);
+			alreadyLoaded.put(yamlSellOffer, fcSO);
+			/*try {
 				fcSO.save(yamlSellOffer);
 				fcBO.save(yamlBuyOrder);
 			} catch (IOException e1) {
 				e1.printStackTrace();
-			}
+			}*/
 		}
 		Chat.sendMessage("Loaded total of " + count + " Enquiries", ChatLevel.INFO);
+	}
+	
+	public static void stop() {
+		alreadyLoaded.forEach((file, fc) ->{
+			try {
+				fc.save(file);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
 	}
 	
 	private static ArrayList<Enquiry> get(FileConfiguration fc, EnquiryTypes type, UUID owner) {
@@ -182,25 +197,19 @@ public class Enquiry implements Cloneable{
 	}
 	
 	private static void save(Enquiry e, boolean b) {
-		try {
-			YamlFile yamlFile = null;
-			if(e instanceof SellOffer) {
-				yamlFile = new YamlFile(new File("plugins/Bazaar/player/" + e.getOwner().toString() + "/sell_offer.yml"));
-			}
-			if(e instanceof BuyOrder) {
-				yamlFile = new YamlFile(new File("plugins/Bazaar/player/" + e.getOwner().toString() + "/buy_order.yml"));
-			}
-			yamlFile.load();
-			yamlFile.set(e.getID().toString() + ".left", e.getLeft());
-			yamlFile.set(e.getID().toString() + ".claimable", e.getClaimable());
-			yamlFile.save();
-		} catch(IOException | de.ancash.ilibrary.yaml.exceptions.InvalidConfigurationException ex) {
-			Chat.sendMessage("Error while saving: ", ChatLevel.WARN);
-			ex.printStackTrace();
+		File yamlFile = null;
+		if(e instanceof SellOffer) {
+			yamlFile = new File("plugins/Bazaar/player/" + e.getOwner().toString() + "/sell_offer.yml");
 		}
+		if(e instanceof BuyOrder) {
+			yamlFile = new File("plugins/Bazaar/player/" + e.getOwner().toString() + "/buy_order.yml");
+		}
+		FileConfiguration fc = alreadyLoaded.get(yamlFile);
+		fc.set(e.getID().toString() + ".left", e.getLeft());
+		fc.set(e.getID().toString() + ".claimable", e.getClaimable());
 	}
 	
-	public static void saveAll(Enquiry e) {
+	public static void saveAll(Enquiry e, boolean stop) {
 		File yamlFile = null;
 		if(e instanceof SellOffer) {
 			yamlFile = new File("plugins/Bazaar/player/" + e.getOwner().toString() + "/sell_offer.yml");
@@ -209,10 +218,13 @@ public class Enquiry implements Cloneable{
 			yamlFile = new File("plugins/Bazaar/player/" + e.getOwner().toString() + "/buy_order.yml");
 		}
 		try {
-			FileConfiguration fc = YamlConfiguration.loadConfiguration(yamlFile);
-			fc.load(yamlFile);
+			FileConfiguration fc = alreadyLoaded.get(yamlFile);
 			if(fc.getInt(e.getID().toString() + ".left") == e.getLeft() && e.getLeft() != 0) {
-				fc.save(yamlFile);;
+				if(stop) {
+					fc.save(yamlFile);
+					alreadyLoaded.get(yamlFile).save(yamlFile);
+					alreadyLoaded.remove(yamlFile);
+				}
 				return;
 			}
 			fc.set(e.getID().toString() + ".amount", e.getAmount());
@@ -225,13 +237,16 @@ public class Enquiry implements Cloneable{
 			
 			fc.set(e.getID().toString() + ".claimable", e.getClaimable());
 			fc.set(e.getID().toString() + ".left", e.getLeft());
-			fc.save(yamlFile);
-		} catch(IOException | InvalidConfigurationException ex) {
+			if(stop) {
+				fc.save(yamlFile);
+				alreadyLoaded.get(yamlFile).save(yamlFile);
+				alreadyLoaded.remove(yamlFile);
+			}
+		} catch(IOException ex) {
 			ex.printStackTrace();
 		}
 	}
 	
-	//XXX 
 	public static void checkEnquiry(Enquiry e) {
 		if(e.getLeft() != 0) return;
 		Category cat = Category.getCategory(e.getCategory());
@@ -275,37 +290,37 @@ public class Enquiry implements Cloneable{
 	public static void deleteEnquiry(Enquiry e) {
 		if(!(e instanceof SellOffer) && !(e instanceof BuyOrder)) return;
 		File yamlFile = new File("plugins/Bazaar/player/" + e.getOwner().toString() + "/" + (e instanceof SellOffer ? "sell_offer.yml" : e instanceof BuyOrder ? "buy_order.yml" : ""));
-		FileConfiguration fc = YamlConfiguration.loadConfiguration(yamlFile);
-		try {
+		FileConfiguration fc = alreadyLoaded.get(yamlFile);
+		/*try {
 			fc.load(yamlFile);
 		} catch (IOException | InvalidConfigurationException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}
+		}*/
 		fc.set(e.getID().toString(), null);
-		try {
+		/*try {
 			fc.save(yamlFile);
 		} catch (IOException ex) {
 			ex.printStackTrace();
-		}
+		}*/
 		
 	}
 	
 	public static void delete(UUID owner, String uuid, EnquiryTypes type) {
 		File yamlFile = new File("plugins/Bazaar/player/" + owner.toString() + "/" + (type == EnquiryTypes.SELL_OFFER ? "sell_offer.yml" : "buy_order.yml"));
-		FileConfiguration fc = YamlConfiguration.loadConfiguration(yamlFile);
-		try {
+		FileConfiguration fc = alreadyLoaded.get(yamlFile);
+		/*try {
 			fc.load(yamlFile);
 		} catch (IOException | InvalidConfigurationException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}
+		}*/
 		fc.set(uuid, null);
-		try {
+		/*try {
 			fc.save(yamlFile);
 		} catch (IOException e) {
 			e.printStackTrace();
-		}	
+		}*/	
 	}
 	
 	//checking if cat and item are valid

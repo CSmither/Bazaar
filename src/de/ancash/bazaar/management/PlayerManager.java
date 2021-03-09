@@ -64,11 +64,17 @@ public final class PlayerManager {
 				e.printStackTrace();
 			}
 		}
+		if(!Enquiry.alreadyLoaded.containsKey(buyOrderFile)) {
+			Enquiry.alreadyLoaded.put(buyOrderFile, YamlConfiguration.loadConfiguration(buyOrderFile));
+		}
+		if(!Enquiry.alreadyLoaded.containsKey(sellOfferFile)) {
+			Enquiry.alreadyLoaded.put(sellOfferFile, YamlConfiguration.loadConfiguration(sellOfferFile));
+		}
 		registered.put(p.getUniqueId(), this);
 	}
 	
 	public int getEnquiries() {
-		return YamlConfiguration.loadConfiguration(sellOfferFile).getKeys(false).size() + YamlConfiguration.loadConfiguration(buyOrderFile).getKeys(false).size();
+		return Enquiry.alreadyLoaded.get(buyOrderFile).getKeys(false).size() + Enquiry.alreadyLoaded.get(sellOfferFile).getKeys(false).size();
 	}
 	
 	public static void remove(UUID id) {
@@ -90,7 +96,7 @@ public final class PlayerManager {
 	public int getClaimableItems() {
 		int claimable = 0;
 		
-		FileConfiguration fc = YamlConfiguration.loadConfiguration(buyOrderFile);
+		FileConfiguration fc = Enquiry.alreadyLoaded.get(buyOrderFile);
 		
 		for(String id : fc.getKeys(false)) {
 			SelfBalancingBST root = Category.getCategory(fc.getInt(id + ".category")).getBuyOrders(fc.getInt(id + ".show"), fc.getInt(id + ".sub"));
@@ -107,7 +113,7 @@ public final class PlayerManager {
 	
 	public double getClaimableCoins() {
 		double claimable = 0;
-		FileConfiguration fc = YamlConfiguration.loadConfiguration(sellOfferFile);
+		FileConfiguration fc = Enquiry.alreadyLoaded.get(sellOfferFile);
 		for(String id : fc.getKeys(false)) {
 			SelfBalancingBST root = Category.getCategory(fc.getInt(id + ".category")).getSellOffers(fc.getInt(id + ".show"), fc.getInt(id + ".sub"));
 			SelfBalancingBSTNode sellOffer = root.get(fc.getDouble(id + ".price"), root.getRoot());
@@ -123,7 +129,7 @@ public final class PlayerManager {
 	
 	public CompactMap<String, CompactMap<String, Number>> getSellOffer() {
 		CompactMap<String, CompactMap<String, Number>> allSellOffer = new CompactMap<String, CompactMap<String, Number>>();
-		FileConfiguration fc = YamlConfiguration.loadConfiguration(sellOfferFile);
+		FileConfiguration fc = Enquiry.alreadyLoaded.get(sellOfferFile);
 		for(String id : fc.getKeys(false)) {
 			int total = fc.getInt(id + ".amount");
 			double price = fc.getDouble(id + ".price");
@@ -162,7 +168,7 @@ public final class PlayerManager {
 	
 	public CompactMap<String, CompactMap<String, Number>> getBuyOrder() {
 		CompactMap<String, CompactMap<String, Number>> allBuyOrder = new CompactMap<String, CompactMap<String, Number>>();
-		FileConfiguration fc = YamlConfiguration.loadConfiguration(buyOrderFile);
+		FileConfiguration fc = Enquiry.alreadyLoaded.get(buyOrderFile);
 		for(String id : fc.getKeys(false)) {
 			int total = fc.getInt(id + ".amount");
 			double price = fc.getDouble(id + ".price");

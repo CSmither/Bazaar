@@ -6,7 +6,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import de.ancash.bazaar.utils.BuyOrder;
-import de.ancash.bazaar.utils.Enquiry;
 import de.ancash.ilibrary.datastructures.tuples.Duplet;
 import de.ancash.ilibrary.datastructures.tuples.Tuple;
 
@@ -449,7 +448,7 @@ public class SelfBalancingBST {
     	bo.reduce(reducable);
     	bo.addClaimable(reducable);
     	if(bo.getLeft() == 0) {
-    		Enquiry.saveAll(bo);
+    		Enquiry.saveAll(bo, false);
     		Enquiry.checkEnquiry(bo);
     		node.remove(bo.getID());
     	}

@@ -22,6 +22,7 @@ import de.ancash.bazaar.events.BuyInstaEvent;
 import de.ancash.bazaar.events.SellInstaEvent;
 import de.ancash.bazaar.files.Files;
 import de.ancash.bazaar.management.Category;
+import de.ancash.bazaar.management.ManageEnquiriesListener;
 import de.ancash.bazaar.management.PlayerManager;
 import de.ancash.bazaar.management.SelfBalancingBST;
 import de.ancash.bazaar.management.SelfBalancingBSTNode;

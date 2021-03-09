@@ -1,11 +1,10 @@
-package de.ancash.bazaar.listeners;
+package de.ancash.bazaar.management;
 
 import java.io.File;
 import java.util.UUID;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.Inventory;
@@ -18,18 +17,13 @@ import de.ancash.ilibrary.datastructures.tuples.Tuple;
 import de.ancash.ilibrary.minecraft.nbt.NBTItem;
 import de.ancash.bazaar.Bazaar;
 import de.ancash.bazaar.files.Files;
-import de.ancash.bazaar.management.Category;
-import de.ancash.bazaar.management.PlayerManager;
-import de.ancash.bazaar.management.SelfBalancingBST;
-import de.ancash.bazaar.management.SelfBalancingBSTNode;
+import de.ancash.bazaar.management.Enquiry.EnquiryTypes;
 import de.ancash.bazaar.utils.Chat;
-import de.ancash.bazaar.utils.Enquiry.EnquiryTypes;
 import de.ancash.bazaar.utils.InventoryUtils;
 import de.ancash.bazaar.utils.ItemFromFile;
 import de.ancash.bazaar.utils.ItemStackUtils;
 import de.ancash.bazaar.utils.MathsUtils;
 import de.ancash.bazaar.utils.Chat.ChatLevel;
-import de.ancash.bazaar.utils.Enquiry;
 
 import static de.ancash.bazaar.utils.Response.*;
 
@@ -142,7 +136,7 @@ public class ManageEnquiriesListener {
 	
 	private static void collectFromFile(double price, int category, int show, int sub, String uuid, Player p, EnquiryTypes type) {
 		File f = new File("plugins/Bazaar/player/" + p.getUniqueId().toString() + "/" + (type.equals(EnquiryTypes.BUY_ORDER) ? "buy_order.yml" : "sell_offer.yml"));
-		FileConfiguration fc = YamlConfiguration.loadConfiguration(f);
+		FileConfiguration fc = Enquiry.alreadyLoaded.get(f);
 		if(fc.getInt(uuid + ".claimable") == 0) {
 			p.sendMessage(NOTHIN_TO_CLAIM);
 			openInv(p);
@@ -184,7 +178,7 @@ public class ManageEnquiriesListener {
 		return;
 	}
 	
-	//optimize
+	//XXX
 	
 	private static void openInv(Player p) {
 		Inventory mE = PlayerManager.get(p.getUniqueId()).getManageEnquiries();

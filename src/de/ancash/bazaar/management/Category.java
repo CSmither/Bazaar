@@ -16,10 +16,9 @@ import org.bukkit.plugin.Plugin;
 
 import de.ancash.bazaar.Bazaar;
 import de.ancash.bazaar.files.Files;
+import de.ancash.bazaar.management.Enquiry.EnquiryTypes;
 import de.ancash.bazaar.utils.Chat;
-import de.ancash.bazaar.utils.Enquiry;
 import de.ancash.bazaar.utils.Chat.ChatLevel;
-import de.ancash.bazaar.utils.Enquiry.EnquiryTypes;
 import de.ancash.bazaar.utils.FileUtils;
 import de.ancash.bazaar.utils.ItemFromFile;
 import de.ancash.ilibrary.datastructures.maps.CompactMap;
