@@ -1,0 +1,525 @@
+# PLACEHOLDER
+
+#%orders_price_highest% lowest price in all buy order
+#%orders_price_highest% highest price in all buy order
+#&7%orders_total%&7 total amount of buy orders
+#%orders_content% total amount of items in sell offers
+#%offers__price_lowest% lowest price in all sell offer
+#%offers_price_highest% highest price in all sell offer
+#&7%offers_total%&7 total amount of sell offers
+#%offers_content% total amount of items in sell offers
+#placeholder wont always work, only those which are already used in an items description
+#empty price is taken if no sell offer or buy order exist. only for creating sell/buy and NOT for instant buy/sell
+1:
+   show: #item with extra information
+      type: WHEAT
+      meta:
+         data: 0 
+         displayname: "§eWheat"
+         lore:
+         - " "
+         - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+         - "  "
+         - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+   sub:
+      1:
+         emptyPrice: 2
+         show:
+            type: WHEAT
+            meta:
+               data: 0 
+               displayname: "§eWheat"
+               lore:
+               - " "
+               - "&7Buy price: &7%offers_price_lowest%"
+               - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+               - "  "
+               - "&7Sell price: &7%orders_price_highest%"
+               - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+         original:
+            type: WHEAT  
+      2:
+         emptyPrice: 2
+         show:
+            type: HAY_BLOCK
+            meta:
+               data: 0 
+               displayname: "§eHay Block"
+               lore:
+               - " "
+               - "&7Buy price: &7%offers_price_lowest%"
+               - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+               - "  "
+               - "&7Sell price: &7%orders_price_highest%"
+               - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+         original:
+            type: HAY_BLOCK 
+         
+2:
+   show: #item with extra information
+      type: CARROT_ITEM
+      meta:
+         data: 0 
+         displayname: "§eCarrot"
+         lore:
+         - " "
+         - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+         - "  "
+         - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+   sub:
+      1:
+         emptyPrice: 2
+         show:
+            type: CARROT_ITEM
+            meta:
+               data: 0 
+               displayname: "§eCarrot"
+               lore:
+               - " "
+               - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+               - "  "
+               - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+         original:
+            type: CARROT_ITEM  
+3:
+   show: #item with information about ALL sell/buy orders in this sub category
+      type: POTATO_ITEM
+      meta:
+         data: 0 
+         displayname: "§ePotato"
+         lore:
+         - " "
+         - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+         - "  "
+         - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+   sub:
+      1:
+         emptyPrice: 2
+         show:
+            type: POTATO_ITEM
+            meta:
+               data: 0 
+               displayname: "§ePotato"
+               lore:
+               - " "
+               - "&7Buy price: &7%offers_price_lowest%"
+               - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+               - "  "
+               - "&7Sell price: &7%orders_price_highest%"
+               - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+         original:
+            type: POTATO_ITEM  
+4:
+   show: #item with extra information
+      type: PUMPKIN
+      meta:
+         data: 0 
+         displayname: "§ePumpkin"
+         lore:
+         - " "
+         - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+         - "  "
+         - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+   sub:
+      1:
+         emptyPrice: 2
+         show:
+            type: PUMPKIN
+            meta:
+               data: 0 
+               displayname: "§ePumpkin"
+               lore:
+               - " "
+               - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+               - "  "
+               - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+         original:
+            type: PUMPKIN  
+5:
+   show: #item with extra information
+      type: MELON
+      meta:
+         data: 0 
+         displayname: "§eMelon"
+         lore:
+         - " "
+         - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+         - "  "
+         - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+   sub:
+      1:
+         emptyPrice: 2
+         show:
+            type: MELON
+            meta:
+               data: 0 
+               displayname: "§eMelon"
+               lore:
+               - " "
+               - "&7Buy price: &7%offers_price_lowest%"
+               - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+               - "  "
+               - "&7Sell price: &7%orders_price_highest%"
+               - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+         original:
+            type: MELON 
+6:
+   show: #item with extra information
+      type: SEEDS
+      meta:
+         data: 0 
+         displayname: "§eSeeds"
+         lore:
+         - " "
+         - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+         - "  "
+         - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+   sub:
+      1:
+         emptyPrice: 2
+         show:
+            type: SEEDS
+            meta:
+               data: 0 
+               displayname: "§eSeeds"
+               lore:
+               - " "
+               - "&7Buy price: &7%offers_price_lowest%"
+               - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+               - "  "
+               - "&7Sell price: &7%orders_price_highest%"
+               - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+         original:
+            type: SEEDS 
+7:
+   show: #item with extra information
+      type: RED_MUSHROOM
+      meta:
+         data: 0 
+         displayname: "§eRed Mushroom"
+         lore:
+         - " "
+         - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+         - "  "
+         - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+   sub:
+      1:
+         emptyPrice: 2
+         show:
+            type: RED_MUSHROOM
+            meta:
+               data: 0 
+               displayname: "§eRed Mushroom"
+               lore:
+               - " "
+               - "&7Buy price: &7%offers_price_lowest%"
+               - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+               - "  "
+               - "&7Sell price: &7%orders_price_highest%"
+               - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+         original:
+            type: RED_MUSHROOM 
+8:
+   show: #item with extra information
+      type: BROWN_MUSHROOM
+      meta:
+         data: 0 
+         displayname: "§eBrown Mushroom"
+         lore:
+         - " "
+         - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+         - "  "
+         - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+   sub:
+      1:
+         emptyPrice: 2
+         show:
+            type: BROWN_MUSHROOM
+            meta:
+               data: 0 
+               displayname: "§eBrown Mushroom"
+               lore:
+               - " "
+               - "&7Buy price: &7%offers_price_lowest%"
+               - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+               - "  "
+               - "&7Sell price: &7%orders_price_highest%"
+               - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+         original:
+            type: BROWN_MUSHROOM 
+9:
+   show: #item with extra information
+      type: COCOA
+      meta:
+         data: 0 
+         displayname: "§eCocoa Beans"
+         lore:
+         - " "
+         - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+         - "  "
+         - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+   sub:
+      1:
+         emptyPrice: 2
+         show:
+            type: COCOA
+            meta:
+               data: 0 
+               displayname: "§eCocoa"
+               lore:
+               - " "
+               - "&7Buy price: &7%offers_price_lowest%"
+               - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+               - "  "
+               - "&7Sell price: &7%orders_price_highest%"
+               - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+         original:
+            type: COCOA 
+10:
+   show: #item with extra information
+      type: CACTUS
+      meta:
+         data: 0 
+         displayname: "§eCactus"
+         lore:
+         - " "
+         - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+         - "  "
+         - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+   sub:
+      1:
+         emptyPrice: 2
+         show:
+            type: CACTUS
+            meta:
+               data: 0 
+               displayname: "§eCactus"
+               lore:
+               - " "
+               - "&7Buy price: &7%offers_price_lowest%"
+               - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+               - "  "
+               - "&7Sell price: &7%orders_price_highest%"
+               - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+         original:
+            type: CACTUS
+11:
+   show: #item with extra information
+      type: SUGAR_CANE
+      meta:
+         data: 0 
+         displayname: "§eSugar Cane"
+         lore:
+         - " "
+         - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+         - "  "
+         - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+   sub:
+      1:
+         emptyPrice: 2
+         show:
+            type: SUGAR_CANE
+            meta:
+               data: 0 
+               displayname: "§eSugar Cane"
+               lore:
+               - " "
+               - "&7Buy price: &7%offers_price_lowest%"
+               - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+               - "  "
+               - "&7Sell price: &7%orders_price_highest%"
+               - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+         original:
+            type: SUGAR_CANE
+12:
+   show: #item with extra information
+      type: FEATHER
+      meta:
+         data: 0 
+         displayname: "§eFeather"
+         lore:
+         - " "
+         - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+         - "  "
+         - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+   sub:
+      1:
+         emptyPrice: 2
+         show:
+            type: FEATHER
+            meta:
+               data: 0 
+               displayname: "§eFeather"
+               lore:
+               - " "
+               - "&7Buy price: &7%offers_price_lowest%"
+               - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+               - "  "
+               - "&7Sell price: &7%orders_price_highest%"
+               - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+         original:
+            type: FEATHER
+13:
+   show: #item with extra information
+      type: LEATHER
+      meta:
+         data: 0 
+         displayname: "§eLeather"
+         lore:
+         - " "
+         - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+         - "  "
+         - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+   sub:
+      1:
+         emptyPrice: 2
+         show:
+            type: LEATHER
+            meta:
+               data: 0 
+               displayname: "§eLeather"
+               lore:
+               - " "
+               - "&7Buy price: &7%offers_price_lowest%"
+               - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+               - "  "
+               - "&7Sell price: &7%orders_price_highest%"
+               - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+         original:
+            type: LEATHER
+14:
+   show: #item with extra information
+      type: PORK
+      meta:
+         data: 0 
+         displayname: "§eRaw Porkchop"
+         lore:
+         - " "
+         - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+         - "  "
+         - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+   sub:
+      1:
+         emptyPrice: 2
+         show:
+            type: PORK
+            meta:
+               data: 0 
+               displayname: "§eRaw Porkchop"
+               lore:
+               - " "
+               - "&7Buy price: &7%offers_price_lowest%"
+               - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+               - "  "
+               - "&7Sell price: &7%orders_price_highest%"
+               - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+         original:
+            type: PORK
+15:
+   show: #item with extra information
+      type: RAW_CHICKEN
+      meta:
+         data: 0 
+         displayname: "§eRaw Chicken"
+         lore:
+         - " "
+         - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+         - "  "
+         - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+   sub:
+      1:
+         emptyPrice: 2
+         show:
+            type: RAW_CHICKEN
+            meta:
+               data: 0 
+               displayname: "§eRaw Chicken"
+               lore:
+               - " "
+               - "&7Buy price: &7%offers_price_lowest%"
+               - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+               - "  "
+               - "&7Sell price: &7%orders_price_highest%"
+               - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+         original:
+            type: RAW_CHICKEN
+16:
+   show: #item with extra information
+      type: MUTTON
+      meta:
+         data: 0 
+         displayname: "§eRaw Mutton"
+         lore:
+         - " "
+         - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+         - "  "
+         - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+   sub:
+      1:
+         emptyPrice: 2
+         show:
+            type: MUTTON
+            meta:
+               data: 0 
+               displayname: "§eRaw Muton"
+               lore:
+               - " "
+               - "&7Buy price: &7%offers_price_lowest%"
+               - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+               - "  "
+               - "&7Sell price: &7%orders_price_highest%"
+               - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+         original:
+            type: MUTTON
+17:
+   show: #item with extra information
+      type: RABBIT
+      meta:
+         data: 0 
+         displayname: "§eRaw Rabbit"
+         lore:
+         - " "
+         - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+         - "  "
+         - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+   sub:
+      1:
+         emptyPrice: 2
+         show:
+            type: RABBIT
+            meta:
+               data: 0 
+               displayname: "§eRaw Rabbit"
+               lore:
+               - " "
+               - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+               - "  "
+               - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+         original:
+            type: RABBIT
+18:
+   show: #item with extra information
+      type: NETHER_WARTS
+      meta:
+         data: 0 
+         displayname: "§eNether Warts"
+         lore:
+         - " "
+         - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+         - "  "
+         - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+   sub:
+      1:
+         emptyPrice: 2
+         show:
+            type: NETHER_WARTS
+            meta:
+               data: 0 
+               displayname: "§eNether Warts"
+               lore:
+               - " "
+               - "&8%offers_content%&8 in &8%offers_total%&8 offers"
+               - "  "
+               - "&8%orders_content%&8 in &8%orders_total%&8 offers"
+         original:
+            type: NETHER_WARTS

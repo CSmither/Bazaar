@@ -1,9 +1,0 @@
-name: Bazaar
-version: 2.2
-main: de.ancash.bazaar.Bazaar
-depend: [ILibrary, Vault]
-
-commands:
-   bz:
-      description: Various options for interacting with the plugin
-      usage: Please use /bz <open>
