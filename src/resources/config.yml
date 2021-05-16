@@ -1,0 +1,20 @@
+multipleServers: false
+address: localhost
+port: 25600
+tax: 4 #in %
+
+noMoney: "&cYou don't have enough money!"
+categoryInProcess: "This Category is still in process!"
+inventoryFull: "&cYour inventory is full!"
+cannotCreateEnquiry: "&cCannot create! You have too many!"
+nothingToClaim: "&cThere is nothing to claim!"
+
+noItemsToSell: "&cYou don't have any items to sell!"
+
+noSellOffers: "&cCouldn't find any sell offer!"
+noSellOffersAvailablePrice: "&cThere are no sell offers available. Using predefined price"
+sellOfferSetup: "&eSell Offer Setup! &a%amount%&7x &r%displayname% &7for &6%price% coins"
+
+noBuyOrders: "&cCouldn't find any buy orders for this item!"
+noBuyOrdersAvailablePrice: "&cThere are no buy orders available. Using predefined price"
+buyOrderSetup: "&eBuy Order Setup! &a%amount%&7x &r%displayname% &7for &6%price% coins"

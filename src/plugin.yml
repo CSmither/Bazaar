@@ -1,0 +1,9 @@
+name: Bazaar
+version: 4.0
+main: de.ancash.bazaar.Bazaar
+depend: [ILibrary, Vault]
+
+commands:
+   bz:
+      description: Many (2) options for interacting with the plugin
+      usage: Use /bz <open, setitem> <player>
