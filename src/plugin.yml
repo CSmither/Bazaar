@@ -1,7 +1,8 @@
 name: Bazaar
-version: 4.0
+version: 4.3
 main: de.ancash.bazaar.Bazaar
 depend: [ILibrary, Vault]
+api-version: 1.13
 
 commands:
    bz:

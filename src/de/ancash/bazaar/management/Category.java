@@ -8,15 +8,13 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import de.ancash.bazaar.Bazaar;
-import de.ancash.bazaar.management.Enquiry.EnquiryTypes;
+import de.ancash.bazaar.management.Enquiry.EnquiryType;
 import de.ancash.bazaar.utils.Chat;
 import de.ancash.bazaar.utils.Chat.ChatLevel;
 import de.ancash.datastructures.maps.CompactMap;
@@ -78,21 +76,16 @@ public class Category {
 				
 				FileConfiguration fc = YamlConfiguration.loadConfiguration(catFile);
 				fc.load(catFile);
-				//loop through each item in the category
 				if(fc.getKeys(false).isEmpty()) {
 					Chat.sendMessage("No Items found for Category " + i + " in File " + catFilePath, ChatLevel.WARN);
 					continue;
 				}
 				
 				Category cat = new Category(i);
-				Inventory inv = Bukkit.createInventory(null, 5 * 9, "UHUHUHUHUHUHUHU");
-				inv.setContents(plugin.bazaarTemplate.getContents().clone());
-				cat.sub = plugin.bazaarTemplate.getContents().clone();
 				for(String path : fc.getKeys(false)) {
 					try {
 						int id = Integer.valueOf(path);
-						cat.sub[id - 1] = ItemStackUtils.get(fc, id + ".sub");
-						inv.setItem(getSlotByID(id), ItemStackUtils.get(fc, id + ".subsub"));
+						cat.sub[id - 1] = legacyToNormal(ItemStackUtils.get(fc, id + ".sub"));
 						for(int sub = 1; sub<=9; sub++) {
 							if(fc.getString(path + ".subsub." + sub + ".original.type") == null && fc.getItemStack(path + ".subsub." + sub + ".original") == null) continue;
 							cat.allOriginal[id - 1][sub - 1] = legacyToNormal(ItemStackUtils.get(fc, path + ".subsub." + sub + ".original"));
@@ -185,16 +178,16 @@ public class Category {
 		return allBuyOrdersInList.get(show);
 	}
 	
-	public SelfBalancingBSTNode get(EnquiryTypes t, int a, int b, double value) {
+	public SelfBalancingBSTNode get(EnquiryType t, int a, int b, double value) {
 		SelfBalancingBST tree = null;
 		tree = getTree(t, a, b);
 		if(tree == null) return null;
 		return tree.get(value, tree.getRoot());
 	}
 	
-	public SelfBalancingBST getTree(EnquiryTypes type, int a, int b) {
-		if(type.equals(EnquiryTypes.SELL_OFFER)) return getSellOffers(a, b);
-		if(type.equals(EnquiryTypes.BUY_ORDER)) return getBuyOrders(a, b);
+	public SelfBalancingBST getTree(EnquiryType type, int a, int b) {
+		if(type.equals(EnquiryType.SELL_OFFER)) return getSellOffers(a, b);
+		if(type.equals(EnquiryType.BUY_ORDER)) return getBuyOrders(a, b);
 		return null;
 	}
 	
@@ -206,13 +199,13 @@ public class Category {
 		return allBuyOrders.get(a).get(b);
 	}
 	
-	public CompactMap<UUID, Enquiry> getLowest(EnquiryTypes type, int a, int sub) {
+	public CompactMap<UUID, Enquiry> getLowest(EnquiryType type, int a, int sub) {
 		SelfBalancingBST tree = getTree(type, a, sub);
 		if(tree == null) return null;
 		return tree.getMin().get();
 	}
 	
-	public CompactMap<UUID, Enquiry> getHighest(EnquiryTypes type, int a, int sub) {
+	public CompactMap<UUID, Enquiry> getHighest(EnquiryType type, int a, int sub) {
 		SelfBalancingBST tree = getTree(type, a, sub);
 		if(tree == null) return null;
 		return tree.getMax().get();

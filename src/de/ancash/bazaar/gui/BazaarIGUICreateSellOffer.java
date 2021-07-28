@@ -1,19 +1,17 @@
 package de.ancash.bazaar.gui;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import de.ancash.bazaar.Bazaar;
 import de.ancash.bazaar.management.Category;
 import de.ancash.bazaar.management.PlayerManager;
 import de.ancash.bazaar.management.SellOffer;
-import de.ancash.bazaar.utils.InventoryUtils;
 import de.ancash.datastructures.maps.CompactMap;
 import de.ancash.datastructures.tuples.Duplet;
+import de.ancash.minecraft.InventoryUtils;
 import de.ancash.minecraft.ItemStackUtils;
 import de.ancash.minecraft.anvilgui.AnvilGUI;
 import de.ancash.minecraft.inventory.Clickable;
@@ -23,25 +21,18 @@ import static de.ancash.misc.MathsUtils.round;
 
 import java.util.UUID;
 
-class BazaarIGUICreateSellOffer {
+enum BazaarIGUICreateSellOffer {
 
-	private static ItemStack cSO_SAME_AS_TOP_ORDER;
-	private static ItemStack cSO_TOP_ORDER_PLUS_ZERO_POINT_ONE;
-	private static ItemStack cSO_TEN_PERCENT_OF_SPREAD;
-	private static ItemStack cSO_CONFIRM;
-	private static String TITLE;
-	private static String TITLE_CONFIRM;
-		
-	static final ItemStack pickAmount;
+	INSTANCE;
 	
-	static {
-		pickAmount = new ItemStack(Material.SIGN);
-		ItemMeta im = pickAmount.getItemMeta();
-		im.setDisplayName("0");
-		pickAmount.setItemMeta(im);
-	}
+	private ItemStack cSO_SAME_AS_TOP_ORDER;
+	private ItemStack cSO_TOP_ORDER_PLUS_ZERO_POINT_ONE;
+	private ItemStack cSO_TEN_PERCENT_OF_SPREAD;
+	private ItemStack cSO_CONFIRM;
+	private String TITLE;
+	private String TITLE_CONFIRM;
 	
-	static void load(Bazaar instance) {
+	void load(Bazaar instance) {
 		cSO_CONFIRM = ItemStackUtils.get(instance.getInvConfig(), "inventory.sell-offer.confirm.item");
 		
 		cSO_SAME_AS_TOP_ORDER = ItemStackUtils.get(instance.getInvConfig(), "inventory.sell-offer.sameAsBestOffer");
@@ -51,7 +42,8 @@ class BazaarIGUICreateSellOffer {
 		TITLE_CONFIRM = instance.getInvConfig().getString("inventory.sell-offer.confirm.title");
 	}
 	
-	public static void openCreateSellOffer(BazaarIGUI igui) {
+	public void openCreateSellOffer(BazaarIGUI igui) {
+		igui.currentGUIType = BazaarIGUIType.CREATE_SELL_OFFER;
 		//check if player has any items to sell
 		if(InventoryUtils.getContentAmount(Bukkit.getPlayer(igui.getId()).getInventory(), Category.getCategory(igui.currentCategory).getOriginal(igui.currentSub, igui.currentSubSub)) == 0)
 			return;
@@ -63,7 +55,7 @@ class BazaarIGUICreateSellOffer {
 	
 	
 	
-	private static void openSelectOPT(BazaarIGUI igui) {
+	private void openSelectOPT(BazaarIGUI igui) {
 		igui.unlock();
 		igui.newInventory(TITLE, 27);
 		igui.clearInventoryItems();
@@ -96,7 +88,7 @@ class BazaarIGUICreateSellOffer {
 			}
 		
 		});
-		final Duplet<Double, String> spread = InventoryUtils.getSpread(sellOfferMin, buyOrderMax, 10);
+		final Duplet<Double, String> spread = getSpread(sellOfferMin, buyOrderMax, 10);
 		placeholders.put("%unit_price%", round((sellOfferMin - spread.getFirst()), 1) + "");
 		placeholders.put("%price_total%", round((sellOfferMin - spread.getFirst()) * igui.enquiryAmount, 1) + "");
 		placeholders.put("%offers_price_lowest%", round(sellOfferMin, 1) + "");
@@ -116,7 +108,7 @@ class BazaarIGUICreateSellOffer {
 			@Override
 			public void onClick(int slot, boolean shift, InventoryAction action, boolean topInventory) {
 				igui.lock();
-				AnvilGUI gui = new AnvilGUI.Builder().itemLeft(pickAmount.clone()).plugin(igui.plugin).onComplete((player, str) ->{
+				AnvilGUI gui = new AnvilGUI.Builder().itemLeft(PICK_AMOUNT.clone()).plugin(igui.plugin).onComplete((player, str) ->{
 					double price = -1;
 					try {
 						price = Double.valueOf(str);
@@ -140,9 +132,9 @@ class BazaarIGUICreateSellOffer {
 		});
 	}
 	
-	private static CompactMap<UUID, AnvilGUI> guis = new CompactMap<>();
+	private CompactMap<UUID, AnvilGUI> guis = new CompactMap<>();
 	
-	private static void confirm(BazaarIGUI igui, double pricePerUnit) {
+	private void confirm(BazaarIGUI igui, double pricePerUnit) {
 		igui.unlock();
 		igui.newInventory(TITLE_CONFIRM, 27);
 		igui.setBackground(BazaarIGUI.INVENTORY_SIZE_TWNTY_SVN);

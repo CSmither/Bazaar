@@ -7,14 +7,14 @@ import java.util.Iterator;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import de.ancash.bazaar.Bazaar;
-import de.ancash.bazaar.management.Enquiry.EnquiryTypes;
+import de.ancash.bazaar.management.Enquiry.EnquiryType;
 import de.ancash.bazaar.utils.Chat;
 import de.ancash.bazaar.utils.Chat.ChatLevel;
 import de.ancash.datastructures.maps.CompactMap;
+import de.ancash.minecraft.XMaterial;
 import de.ancash.misc.Validate;
 import de.ancash.yaml.configuration.file.YamlFile;
 import de.ancash.yaml.exceptions.InvalidConfigurationException;
@@ -53,19 +53,17 @@ public class EnquiryUtils {
 			YamlFile yamlBuyOrder = new YamlFile(buyOrderFile);
 			
 			try {
-				yamlBuyOrder.createNewFile(false);
-				yamlSellOffer.createNewFile(false);
-				yamlBuyOrder.load();
-				yamlSellOffer.load();
+				yamlBuyOrder.createOrLoad();
+				yamlSellOffer.createOrLoad();
 			} catch (InvalidConfigurationException | IOException e1) {
 				e1.printStackTrace();
 			}
 			
-			ArrayList<Enquiry> buy_order = get(yamlBuyOrder, EnquiryTypes.BUY_ORDER, UUID.fromString(p.getName()));
+			ArrayList<Enquiry> buy_order = get(yamlBuyOrder, EnquiryType.BUY_ORDER, UUID.fromString(p.getName()));
 			buy_order.forEach(e -> insert(e));
 			count = count + buy_order.size();
 			
-			ArrayList<Enquiry> sell_offer = get(yamlSellOffer, EnquiryTypes.SELL_OFFER, UUID.fromString(p.getName()));
+			ArrayList<Enquiry> sell_offer = get(yamlSellOffer, EnquiryType.SELL_OFFER, UUID.fromString(p.getName()));
 			sell_offer.forEach(e -> insert(e));
 			count = count + sell_offer.size();
 			
@@ -75,7 +73,7 @@ public class EnquiryUtils {
 		Chat.sendMessage("Loaded total of " + count + " Enquiries", ChatLevel.INFO);
 	}
 	
-	public void stop() {
+	public void save() {
 		alreadyLoaded.forEach((file, fc) ->{
 			try {
 				fc.save(file);
@@ -85,9 +83,9 @@ public class EnquiryUtils {
 		});
 	}
 	
-	private ArrayList<Enquiry> get(YamlFile fc, EnquiryTypes type, UUID owner) {
+	private ArrayList<Enquiry> get(YamlFile fc, EnquiryType type, UUID owner) {
 		ArrayList<Enquiry> e = new ArrayList<Enquiry>();
-		if(type.equals(EnquiryTypes.BUY_ORDER)) {
+		if(type.equals(EnquiryType.BUY_ORDER)) {
 			Iterator<String> ids = fc.getKeys(false).iterator();
 			String id = null;
 			while(ids.hasNext()) {
@@ -103,7 +101,7 @@ public class EnquiryUtils {
 						fc.getLong(id + ".lastEdit")));
 			}
 		}
-		if(type.equals(EnquiryTypes.SELL_OFFER)) {
+		if(type.equals(EnquiryType.SELL_OFFER)) {
 			Iterator<String> ids = fc.getKeys(false).iterator();
 			String id = null;
 			while(ids.hasNext()) {
@@ -156,8 +154,8 @@ public class EnquiryUtils {
 		fc.set(e.getID().toString() + ".amount", e.getAmount());
 		fc.set(e.getID().toString() + ".price", e.getPrice());
 		fc.set(e.getID().toString() + ".category", e.getCategory());
-		fc.set(e.getID().toString() + ".sub", e.getShow());
-		fc.set(e.getID().toString() + ".subsub", e.getSub());
+		fc.set(e.getID().toString() + ".sub", e.getSub());
+		fc.set(e.getID().toString() + ".subsub", e.getSubSub());
 		fc.set(e.getID().toString() + ".amount", e.getAmount());
 		fc.set(e.getID().toString() + ".timestamp", e.getTimeStamp());
 		fc.set(e.getID().toString() + ".claimable", e.getClaimable());
@@ -172,12 +170,12 @@ public class EnquiryUtils {
 		SelfBalancingBSTNode node = null;
 		
 		if(e instanceof SellOffer) {
-			root = cat.getSellOffers(e.getShow(), e.getSub());
+			root = cat.getSellOffers(e.getSub(), e.getSubSub());
 			node = root.get(e.getPrice(), root.getRoot());
 		}
 		
 		if(e instanceof BuyOrder) {
-			root = cat.getBuyOrders(e.getShow(), e.getSub());
+			root = cat.getBuyOrders(e.getSub(), e.getSubSub());
 			node = root.get(e.getPrice(), root.getRoot());
 		}
 		
@@ -189,12 +187,12 @@ public class EnquiryUtils {
 		if(e.getLeft() == 0) {
 			if(p != null) {
 				if(e instanceof SellOffer) {
-					String name = cat.getSubSub()[e.getShow() - 1][e.getSub() - 1].getItemMeta().getDisplayName();
+					String name = cat.getSubSub()[e.getSub() - 1][e.getSubSub() - 1].getItemMeta().getDisplayName();
 					p.sendMessage("§6[Bazaar] §eYour §aSell Offer §efor §a" + e.getAmount() + "§7x " + name + " §ewas filled!");
 				}
 				
 				if(e instanceof BuyOrder) {
-					String name = cat.getSubSub()[e.getShow() - 1][e.getSub() - 1].getItemMeta().getDisplayName();
+					String name = cat.getSubSub()[e.getSub() - 1][e.getSubSub() - 1].getItemMeta().getDisplayName();
 					p.sendMessage("§6[Bazaar] §eYour §aBuy Order §efor §a" + e.getAmount() + "§7x " + name + " §ewas filled!");
 				}
 			}
@@ -214,13 +212,13 @@ public class EnquiryUtils {
 	}
 	
 	//XXX
-	public void delete(UUID owner, String uuid, EnquiryTypes type) {
-		File yamlFile = new File("plugins/Bazaar/player/" + owner.toString() + "/" + (type == EnquiryTypes.SELL_OFFER ? "sell_offer.yml" : "buy_order.yml"));
+	public void delete(UUID owner, String uuid, EnquiryType type) {
+		File yamlFile = new File("plugins/Bazaar/player/" + owner.toString() + "/" + (type == EnquiryType.SELL_OFFER ? "sell_offer.yml" : "buy_order.yml"));
 		YamlFile fc = alreadyLoaded.get(yamlFile);
 		fc.set(uuid, null);
 	}
 	
-	public Enquiry getEnquiry(UUID id, int cat, int show, int sub, double price, EnquiryTypes type) {
+	public Enquiry getEnquiry(UUID id, int cat, int show, int sub, double price, EnquiryType type) {
 		Category category = Category.getCategory(cat);
 		SelfBalancingBST tree = category.getTree(type, show, cat);
 		if(tree.get(price, tree.getRoot()) == null) return null;
@@ -232,7 +230,7 @@ public class EnquiryUtils {
 			Chat.sendMessage("Cannot load Item(" + a + ", " + b + ") for non-existing Category(" + cat + ")!", ChatLevel.WARN);
 			return false;
 		}
-		return a <= 18 && a > 0 && b >0 && b <= 9 && !Category.getCategory(cat).getSubSub()[a - 1][b - 1].getType().equals(Material.AIR);
+		return a <= 18 && a > 0 && b >0 && b <= 9 && !Category.getCategory(cat).getSubSub()[a - 1][b - 1].getType().equals(XMaterial.AIR.parseMaterial());
 	}
 	
 	public void insert(Enquiry e) {
@@ -242,7 +240,7 @@ public class EnquiryUtils {
 			SellOffer so = (SellOffer) e;
 			SelfBalancingBST tree = null;
 			SelfBalancingBSTNode node_bo = null;
-			tree = Category.getCategory(e.getCategory()).getBuyOrders(e.getShow(), e.getSub());
+			tree = Category.getCategory(e.getCategory()).getBuyOrders(e.getSub(), e.getSubSub());
 			node_bo = tree.get(e.getPrice(), tree.getRoot());
 			if(node_bo != null && node_bo.getKey() == e.getPrice()) {
 				while(node_bo.get().size() != 0 && so.getLeft() > 0) {
@@ -250,14 +248,14 @@ public class EnquiryUtils {
 				}
 			}
 			if(e.getLeft() > 0) {
-				Category.getCategory(e.getCategory()).getSellOffers(e.getShow(), e.getSub()).insert(e.getPrice(), e);
+				Category.getCategory(e.getCategory()).getSellOffers(e.getSub(), e.getSubSub()).insert(e.getPrice(), e);
 			}
 		}
 		if(e instanceof BuyOrder) {
 			BuyOrder bo = (BuyOrder) e;
 			SelfBalancingBST tree = null;
 			SelfBalancingBSTNode node_so = null;
-			tree = Category.getCategory(e.getCategory()).getSellOffers(e.getShow(), e.getSub());
+			tree = Category.getCategory(e.getCategory()).getSellOffers(e.getSub(), e.getSubSub());
 			node_so = tree.get(e.getPrice(), tree.getRoot());
 			if(node_so != null && node_so.getKey() == e.getPrice()) {
 				while(node_so.get().size() != 0 && bo.getLeft() > 0) {
@@ -265,7 +263,7 @@ public class EnquiryUtils {
 				}
 			}
 			if(e.getLeft() > 0) {
-				Category.getCategory(e.getCategory()).getBuyOrders(e.getShow(), e.getSub()).insert(e.getPrice(), e);
+				Category.getCategory(e.getCategory()).getBuyOrders(e.getSub(), e.getSubSub()).insert(e.getPrice(), e);
 			}
 		}
 	}

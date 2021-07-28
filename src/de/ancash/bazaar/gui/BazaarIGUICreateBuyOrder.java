@@ -1,17 +1,14 @@
 package de.ancash.bazaar.gui;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import de.ancash.bazaar.Bazaar;
 import de.ancash.bazaar.management.BuyOrder;
 import de.ancash.bazaar.management.Category;
 import de.ancash.bazaar.management.PlayerManager;
-import de.ancash.bazaar.utils.InventoryUtils;
 import de.ancash.datastructures.maps.CompactMap;
 import de.ancash.datastructures.tuples.Duplet;
 import de.ancash.minecraft.ItemStackUtils;
@@ -23,30 +20,23 @@ import static de.ancash.misc.MathsUtils.round;
 
 import java.util.UUID;
 
-class BazaarIGUICreateBuyOrder {
+enum BazaarIGUICreateBuyOrder {
 	
-	private static ItemStack cBO_SIXTY_FOUR;
-	private static ItemStack cBO_ONE_HUNDRED_SIXTY;
-	private static ItemStack cBO_ONE_THOUSAND;
-	private static ItemStack cBO_SAME_AS_TOP_ORDER;
-	private static ItemStack cBO_TOP_ORDER_PLUS_ZERO_POINT_ONE;
-	private static ItemStack cBO_FIVE_PERCENT_OF_SPREAD;
-	private static ItemStack cBO_CONFIRM;
-	private static int MAX;
-	private static String TITLE;
-	private static String TITLE_PRICE;
-	private static String TITLE_CONFIRM;
+	INSTANCE;
 	
-	static final ItemStack pickAmount;
+	private ItemStack cBO_SIXTY_FOUR;
+	private ItemStack cBO_ONE_HUNDRED_SIXTY;
+	private ItemStack cBO_ONE_THOUSAND;
+	private ItemStack cBO_SAME_AS_TOP_ORDER;
+	private ItemStack cBO_TOP_ORDER_PLUS_ZERO_POINT_ONE;
+	private ItemStack cBO_FIVE_PERCENT_OF_SPREAD;
+	private ItemStack cBO_CONFIRM;
+	private int MAX;
+	private String TITLE;
+	private String TITLE_PRICE;
+	private String TITLE_CONFIRM;
 	
-	static {
-		pickAmount = new ItemStack(Material.SIGN);
-		ItemMeta im = pickAmount.getItemMeta();
-		im.setDisplayName("0");
-		pickAmount.setItemMeta(im);
-	}
-	
-	static void load(Bazaar instance) {
+	void load(Bazaar instance) {
 		cBO_CONFIRM = ItemStackUtils.get(instance.getInvConfig(), "inventory.buy-order.confirm.item");
 		
 		cBO_SIXTY_FOUR = ItemStackUtils.get(instance.getInvConfig(), "inventory.buy-order.opt1");
@@ -62,8 +52,9 @@ class BazaarIGUICreateBuyOrder {
 		TITLE_CONFIRM = instance.getInvConfig().getString("inventory.buy-order.confirm.title");
 	}
 	
-	public static void openCreateBuyOrder(BazaarIGUI igui) {
+	public void openCreateBuyOrder(BazaarIGUI igui) {
 		igui.unlock();
+		igui.currentGUIType = BazaarIGUIType.CREATE_BUY_ORDER;
 		igui.newInventory(TITLE, 27);
 		igui.clearInventoryItems();
 		igui.setBackground(BazaarIGUI.INVENTORY_SIZE_TWNTY_SVN);
@@ -101,7 +92,7 @@ class BazaarIGUICreateBuyOrder {
 			@Override
 			public void onClick(int slot, boolean shift, InventoryAction action, boolean topInventory) {
 				igui.lock();
-				AnvilGUI gui = new AnvilGUI.Builder().itemLeft(pickAmount.clone()).plugin(igui.plugin).onComplete((player, str) ->{
+				AnvilGUI gui = new AnvilGUI.Builder().itemLeft(PICK_AMOUNT.clone()).plugin(igui.plugin).onComplete((player, str) ->{
 					int amount = -1;
 					try {
 						amount = Integer.valueOf(str);
@@ -132,9 +123,9 @@ class BazaarIGUICreateBuyOrder {
 		});
 	}
 	
-	private static CompactMap<UUID, AnvilGUI> guis = new CompactMap<>();
+	private CompactMap<UUID, AnvilGUI> guis = new CompactMap<>();
 	
-	private static void openSelectOPT(BazaarIGUI igui) {
+	private void openSelectOPT(BazaarIGUI igui) {
 		igui.unlock();
 		igui.newInventory(TITLE_PRICE, 27);
 		igui.setBackground(BazaarIGUI.INVENTORY_SIZE_TWNTY_SVN);
@@ -164,7 +155,7 @@ class BazaarIGUICreateBuyOrder {
 			}
 		
 		});
-		Duplet<Double, String> spread = InventoryUtils.getSpread(getMinSellOfferPrice(igui), getMaxBuyOrderPrice(igui), 5);
+		Duplet<Double, String> spread = getSpread(getMinSellOfferPrice(igui), getMaxBuyOrderPrice(igui), 5);
 		placeholders.put("%unit_price%", round((getMaxBuyOrderPrice(igui) + spread.getFirst()), 1) + "");
 		placeholders.put("%price_total%", round((getMaxBuyOrderPrice(igui) + spread.getFirst()) * igui.enquiryAmount, 1) + "");
 		placeholders.put("%offers_price_lowest%", round(getMinSellOfferPrice(igui), 1) + "");
@@ -174,7 +165,7 @@ class BazaarIGUICreateBuyOrder {
 	
 			@Override
 			public void onClick(int slot, boolean shift, InventoryAction action, boolean topInventory) {
-				confirm(igui, round(getMaxBuyOrderPrice(igui) + InventoryUtils.getSpread(getMinSellOfferPrice(igui), getMaxBuyOrderPrice(igui), 5).getFirst(), 1));
+				confirm(igui, round(getMaxBuyOrderPrice(igui) + getSpread(getMinSellOfferPrice(igui), getMaxBuyOrderPrice(igui), 5).getFirst(), 1));
 			}
 		
 		});
@@ -184,7 +175,7 @@ class BazaarIGUICreateBuyOrder {
 			@Override
 			public void onClick(int slot, boolean shift, InventoryAction action, boolean topInventory) {
 				igui.lock();
-				AnvilGUI gui = new AnvilGUI.Builder().itemLeft(pickAmount.clone()).plugin(igui.plugin).onComplete((player, str) ->{
+				AnvilGUI gui = new AnvilGUI.Builder().itemLeft(PICK_AMOUNT.clone()).plugin(igui.plugin).onComplete((player, str) ->{
 					double price = -1;
 					try {
 						price = Double.valueOf(str);
@@ -209,7 +200,7 @@ class BazaarIGUICreateBuyOrder {
 		});
 	}
 	
-	private static void confirm(BazaarIGUI igui, double pricePerUnit) {
+	private void confirm(BazaarIGUI igui, double pricePerUnit) {
 		igui.unlock();
 		igui.newInventory(TITLE_CONFIRM, 27);
 		igui.setBackground(BazaarIGUI.INVENTORY_SIZE_TWNTY_SVN);

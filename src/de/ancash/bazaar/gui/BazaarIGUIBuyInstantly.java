@@ -4,15 +4,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import de.ancash.bazaar.Bazaar;
 import de.ancash.bazaar.management.Category;
 import de.ancash.bazaar.management.SelfBalancingBST;
 import de.ancash.bazaar.management.SelfBalancingBSTNode;
 import de.ancash.bazaar.management.SellOffer;
-import de.ancash.bazaar.utils.InventoryUtils;
 import de.ancash.datastructures.maps.CompactMap;
+import de.ancash.minecraft.InventoryUtils;
 import de.ancash.minecraft.ItemStackUtils;
 import de.ancash.minecraft.anvilgui.AnvilGUI;
 import de.ancash.minecraft.inventory.Clickable;
@@ -20,25 +19,30 @@ import net.milkbowl.vault.economy.Economy;
 
 import static de.ancash.bazaar.gui.BazaarIGUI.*;
 
-public class BazaarIGUIBuyInstantly {
+import java.util.UUID;
+
+enum BazaarIGUIBuyInstantly {
 	
-	private static ItemStack bI_ONE;
-	private static ItemStack bI_STACK;
+	INSTANCE;
+	
+	private ItemStack bI_ONE;
+	private ItemStack bI_STACK;
 	@SuppressWarnings("unused")
-	private static ItemStack bI_FILL_INVENTORY;
-	private static String TITLE;
+	private ItemStack bI_FILL_INVENTORY;
+	private String TITLE;
 	
-	static void load(Bazaar pl) {
+	void load(Bazaar pl) {
 		bI_ONE = ItemStackUtils.get(pl.getInvConfig(), "inventory.buy-instantly.opt1");
 		bI_STACK = ItemStackUtils.get(pl.getInvConfig(), "inventory.buy-instantly.opt2");
 		bI_FILL_INVENTORY= ItemStackUtils.get(pl.getInvConfig(), "inventory.buy-instantly.fillInv");
 		TITLE = pl.getInvConfig().getString("inventory.buy-instantly.title");
 	}
 	
-	static void openBuyInstantlyInventory(BazaarIGUI igui) {
+	public void openBuyInstantlyInventory(BazaarIGUI igui) {
 		igui.unlock();
+		igui.currentGUIType = BazaarIGUIType.BUY_INSTANTLY;
 		if(Category.getCategory(igui.currentCategory).getSellOffers(igui.currentSub, igui.currentSubSub).isEmpty()) {
-			BazaarIGUISubSub.openSubSub(igui, igui.currentSubSub);
+			BazaarIGUISubSub.INSTANCE.openSubSub(igui, igui.currentSubSub);
 			return;
 		}
 		igui.newInventory(TITLE, 27);
@@ -77,7 +81,7 @@ public class BazaarIGUIBuyInstantly {
 			@Override
 			public void onClick(int slot, boolean shift, InventoryAction action, boolean topInventory) {
 				igui.lock();
-				new AnvilGUI.Builder().itemLeft(CUSTOM_AMOUNT).plugin(igui.plugin).onComplete((player, str) ->{
+				AnvilGUI gui = new AnvilGUI.Builder().itemLeft(PICK_AMOUNT.clone()).plugin(igui.plugin).onComplete((player, str) ->{
 					int amount = -1;
 					try {
 						amount = Integer.valueOf(str);
@@ -85,27 +89,24 @@ public class BazaarIGUIBuyInstantly {
 					
 					if(amount <= 0) {
 						player.sendMessage("§cInvalid Input: " + amount);
+						guis.remove(igui.getId()).closeInventory();
 						openBuyInstantlyInventory(igui);
 						return AnvilGUI.Response.text("");
 					} else {
-						final int buy = amount;
-						new BukkitRunnable() {
-							@Override 
-							public void run() {	
-								process(igui, buy);
-							}
-						}.runTaskLater(igui.plugin, 1);
-						
-						return AnvilGUI.Response.close();
+						guis.remove(igui.getId()).closeInventory();
+						process(igui, amount);
+						return AnvilGUI.Response.text("");
 					}
 					
 				}).open(Bukkit.getPlayer(igui.getId()));
-
+				guis.put(igui.getId(), gui);
 			}
 		});
 	}
 	
-	private static void process(BazaarIGUI igui, int amount) {
+	private final CompactMap<UUID, AnvilGUI> guis = new CompactMap<>();
+	
+	private void process(BazaarIGUI igui, int amount) {
 		igui.unlock();
 		synchronized (Category.getCategory(igui.currentCategory).getSellOffers(igui.currentSub, igui.currentSubSub)) {
 			Player player = Bukkit.getPlayer(igui.getId());
@@ -117,7 +118,7 @@ public class BazaarIGUIBuyInstantly {
 				return;
 			}
 			ItemStack original = Category.getCategory(igui.currentCategory).getOriginal(igui.currentSub, igui.currentSubSub);
-			if(InventoryUtils.getFreeSlots(player) * original.getMaxStackSize() < amount) {
+			if(InventoryUtils.getFreeSlots(player.getInventory()) * original.getMaxStackSize() < amount) {
 				player.sendMessage(igui.plugin.getResponse().INVENTORY_FULL);
 				openBuyInstantlyInventory(igui);
 				return;
@@ -134,7 +135,7 @@ public class BazaarIGUIBuyInstantly {
 					return;
 				}
 				int reducable = amount > sellOffer.getLeft() ? sellOffer.getLeft() : amount;
-				int freeSlots = InventoryUtils.getFreeSlots(player);
+				int freeSlots = InventoryUtils.getFreeSlots(player.getInventory());
 				if(reducable > freeSlots * original.getMaxStackSize()) reducable = freeSlots * original.getMaxStackSize();
 				InventoryUtils.addItemAmount(reducable, original.clone(), player);
 				igui.plugin.getEconomy().withdrawPlayer(player, sellOffer.getPrice() * reducable);

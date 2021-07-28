@@ -4,14 +4,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryAction;
 
 import de.ancash.bazaar.management.Category;
-import de.ancash.bazaar.utils.InventoryUtils;
+import de.ancash.minecraft.InventoryUtils;
 import de.ancash.datastructures.maps.CompactMap;
 import de.ancash.minecraft.ItemStackUtils;
 import de.ancash.minecraft.inventory.Clickable;
 
-class BazaarIGUISubSub {
+enum BazaarIGUISubSub {
 	
-	public static void openSubSub(BazaarIGUI igui, int subsub) {
+	INSTANCE;
+	
+	public void openSubSub(BazaarIGUI igui, int subsub) {
 		igui.currentGUIType = BazaarIGUIType.SUBSUB;
 		igui.currentSubSub = subsub;
 		Category category = Category.getCategory(igui.currentCategory);
@@ -32,7 +34,7 @@ class BazaarIGUISubSub {
 			
 			@Override
 			public void onClick(int slot, boolean shift, InventoryAction action, boolean topInventory) {
-				if(topInventory) BazaarIGUICreateBuyOrder.openCreateBuyOrder(igui);
+				if(topInventory) BazaarIGUICreateBuyOrder.INSTANCE.openCreateBuyOrder(igui);
 			}
 		
 		}).add();
@@ -41,7 +43,7 @@ class BazaarIGUISubSub {
 			
 			@Override
 			public void onClick(int slot, boolean shift, InventoryAction action, boolean topInventory) {
-				if(topInventory) BazaarIGUICreateSellOffer.openCreateSellOffer(igui);
+				if(topInventory) BazaarIGUICreateSellOffer.INSTANCE.openCreateSellOffer(igui);
 			}
 		
 		}).add();
@@ -51,7 +53,7 @@ class BazaarIGUISubSub {
 			@Override
 			public void onClick(int slot, boolean shift, InventoryAction action, boolean topInventory) {
 				if(topInventory) {
-					BazaarIGUIBuyInstantly.openBuyInstantlyInventory(igui);
+					BazaarIGUIBuyInstantly.INSTANCE.openBuyInstantlyInventory(igui);
 				}
 			}
 		
@@ -62,7 +64,7 @@ class BazaarIGUISubSub {
 			@Override
 			public void onClick(int slot, boolean shift, InventoryAction action, boolean topInventory) {
 				if(topInventory) {
-					BazaarIGUISellInstantly.sellInstantly(igui);
+					BazaarIGUISellInstantly.INSTANCE.sellInstantly(igui);
 				}
 			}
 		

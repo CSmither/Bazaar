@@ -9,13 +9,13 @@ public class Enquiry{
 	private int claimable;
 	private UUID owner;
 	private UUID id;
-	private int show;
 	private int sub;
+	private int subsub;
 	private int category;
 	private int amount;
 	private long time_stamp;
 	private long lastEdit;
-	EnquiryTypes type;
+	EnquiryType type;
 	
 	public Enquiry(int amount, double p, UUID i, int category, int a, int b) {
 		this(amount, p, i, category, a, b, amount, System.nanoTime(), UUID.randomUUID(), 0, System.nanoTime());
@@ -26,14 +26,13 @@ public class Enquiry{
 		this.price = price;
 		this.owner = owner;
 		this.category = category;
-		this.show = a;
-		this.sub = b;
+		this.sub = a;
+		this.subsub = b;
 		this.left = left;
 		this.id = id;
 		this.time_stamp = timestamp;
 		this.claimable = claimable;
 		this.lastEdit = lastEdit;
-		EnquiryUtils.instance.saveAll(this);
 	}
 	
 	public int claim() {
@@ -50,10 +49,11 @@ public class Enquiry{
 	
 	@Override
 	public String toString() {
-		return "cat=" + getCategory() + ",show=" + getShow() + ",sub=" + getSub() + ",price=" + getPrice() + ",amt=" + getAmount()
+		return "cat=" + getCategory() + ",sub=" + getSub() + ",subsub=" + getSubSub() + ",price=" + getPrice() + ",amt=" + getAmount()
 				+ ",left=" + getLeft() + ",claimable=" + getClaimable() + ",owner=" + owner.toString() + ",id=" + id.toString() + ",lastEdit" + lastEdit;
 	}
 	
+	public boolean isFilled() {return left == 0;}
 	public long getTimeStamp() {return time_stamp;}
 	public void setLeft(int i) {left = i;}
 	public double getPrice() {return price;}
@@ -62,16 +62,16 @@ public class Enquiry{
 	public int getLeft() {return left;}
 	public int getAmount() {return amount;}
 	public int getCategory() {return category;}
-	public int getShow() {return show;}
 	public int getSub() {return sub;}
+	public int getSubSub() {return subsub;}
 	public int getClaimable() {return claimable;}
-	public EnquiryTypes getType() {return type;}
+	public EnquiryType getType() {return type;}
 	public boolean hasClaimable() {return claimable != 0;}
 	public long getLastEdit() {return lastEdit;}
 	public void setClaimable(int i) {this.claimable = i;}
 	public void setLastEdit(long now) {this.lastEdit = now;}
 	
-	public enum EnquiryTypes{
+	public enum EnquiryType{
 		SELL_OFFER("Sell Offer"),
 		BUY_ORDER("Buy Order");
 		
@@ -81,7 +81,7 @@ public class Enquiry{
 			return name;
 		}
 		
-		EnquiryTypes(String name) {
+		EnquiryType(String name) {
 			this.name = name;
 		}
 	}

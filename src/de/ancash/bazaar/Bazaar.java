@@ -14,7 +14,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import de.ancash.bazaar.commands.BazaarCMD;
 import de.ancash.bazaar.gui.BazaarIGUI;
@@ -26,10 +25,8 @@ import de.ancash.bazaar.utils.Chat;
 import de.ancash.bazaar.utils.Chat.ChatLevel;
 import de.ancash.bazaar.utils.InventoryTemplates;
 import de.ancash.bazaar.utils.Response;
-import de.ancash.ILibrary;
 import de.ancash.minecraft.ItemStackUtils;
 import de.ancash.misc.FileUtils;
-import de.ancash.sockets.client.NIOClient;
 import net.milkbowl.vault.economy.Economy;
 
 public class Bazaar extends JavaPlugin{
@@ -51,8 +48,7 @@ public class Bazaar extends JavaPlugin{
     private Response response;
     
 	public void onEnable() {
-		long now = System.currentTimeMillis();
-		
+		final long now = System.currentTimeMillis();
 		plugin = this;
 		Chat.sendMessage("Loading..", ChatLevel.INFO);
 		if (!setupEconomy() ) {
@@ -62,32 +58,31 @@ public class Bazaar extends JavaPlugin{
         }
 		
 		loadFiles();
+		TAX = cfg.getInt("tax");
 		response = new Response(this);
 		BazaarIGUI.load(this);
 		loadTemplate();
 		category = new Category(this);
-		
-		enquiryUtils = new EnquiryUtils(this);
-		new Listeners(this);
-		
-		registerCommands();
-		
-		enquiryUtils.load();
-		
-		TAX = cfg.getInt("tax");
-		Bukkit.getOnlinePlayers().stream().map(Player::getUniqueId).forEach(PlayerManager::newPlayerManager);
-        
-		//if(cfg.getBoolean("multipleServers")) 
-        //	setupMultipleServersSupport(this);
-        
-        Chat.sendMessage("Done(" + ((double) (System.currentTimeMillis() - now) / 1000) + "s)!", ChatLevel.INFO);
+				
+		new Thread(new Runnable() {
+			
+			@Override
+			public synchronized void run() {
+				enquiryUtils = new EnquiryUtils(plugin);
+				enquiryUtils.load();
+				new Listeners(plugin);
+				registerCommands();
+				Bukkit.getOnlinePlayers().stream().map(Player::getUniqueId).forEach(PlayerManager::newPlayerManager);
+				Chat.sendMessage("Done(" + ((double) (System.currentTimeMillis() - now) / 1000) + "s)!", ChatLevel.INFO);
+			}
+		}, "BazaarEnquiryLoader").start();
 	}
 	
 	public void onDisable() {
 		PlayerManager.clear();
 		Chat.sendMessage("Saving Enquiries...", ChatLevel.INFO);
 		long now = System.currentTimeMillis();
-		enquiryUtils.stop();
+		enquiryUtils.save();
 		Chat.sendMessage("Saving took " + (System.currentTimeMillis() - now) + "ms",ChatLevel.INFO);
 	}
 
@@ -148,59 +143,6 @@ public class Bazaar extends JavaPlugin{
 		inv.setItem(40, ItemStackUtils.get(getInvConfig(), "inventory.close"));
 		inv.setItem(41, ItemStackUtils.get(getInvConfig(), "inventory.manageEnquiries"));
 		bazaarTemplate = new InventoryTemplates(inv);
-	}
-	
-	private static NIOClient client = null;
-	
-	
-	public boolean canSendPackets() {
-		return (client != null) || !ILibrary.getInstance().isChatClientNull();
-	}
-	
-	public boolean send(String packet) {
-		if(client == null && ILibrary.getInstance().isChatClientNull()) return false;
-		if(!ILibrary.getInstance().isChatClientNull()) {
-			ILibrary.getInstance().send(packet);
-			return true;
-		}
-		return false;
-	}
-		
-	protected void setupMultipleServersSupport(Bazaar instance){
-		Chat.sendMessage("Setting up multiple servers support!", ChatLevel.INFO);
-    	if(!ILibrary.getInstance().isSocketNull()) {
-    		Chat.sendMessage("Active Server Socket running on this server!", ChatLevel.INFO);
-    	} else {
-    		Chat.sendMessage("No Server Socket running on this Sever!", ChatLevel.INFO);
-    	}
-    	if(!ILibrary.getInstance().isChatClientNull()) {
-    		Chat.sendMessage("Chat Client running on this Server!", ChatLevel.INFO);
-    	} else {
-    		Chat.sendMessage("No Chat Client running on this server!", ChatLevel.INFO);
-    	}
-    	
-    	new BukkitRunnable() {
-			@Override
-			public void run() {
-				if(client != null) {
-					Chat.sendMessage("Successfully started new Chat Client!", ChatLevel.INFO);
-				}
-				if((client != null) || !ILibrary.getInstance().isChatClientNull()) {
-					/*Chat.sendMessage("Pushing everything...", ChatLevel.INFO);
-					try {
-						EnquiryUpdater.pushAll(plugin);
-					} catch (de.ancash.yaml.exceptions.InvalidConfigurationException | IOException e) {
-						e.printStackTrace();
-					}
-					Chat.sendMessage("Fetching everything...", ChatLevel.INFO);
-					if(client != null) {
-						client.send(PacketBuilder.fetchAll().getPacket().getString());
-					} else {
-						ILibrary.getInstance().send(PacketBuilder.fetchAll().getPacket().getString());
-					}*/
-				}
-			}
-    	}.runTaskAsynchronously(this);
 	}
 	
 	

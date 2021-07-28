@@ -1,19 +1,21 @@
 package de.ancash.bazaar.gui;
 
-import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.ItemStack;
 
 import de.ancash.bazaar.management.Category;
+import de.ancash.minecraft.XMaterial;
 import de.ancash.minecraft.inventory.Clickable;
 
-class BazaarIGUISub {
+enum BazaarIGUISub {
 
+	INSTANCE;
+	
 	/**
 	 * 
 	 * @param igui
 	 */
-	public static void open(BazaarIGUI igui, int sub) {
+	public void open(BazaarIGUI igui, int sub) {
 		igui.currentGUIType = BazaarIGUIType.SUB;
 		igui.currentSub = sub;
 		Category category = Category.getCategory(igui.currentCategory);
@@ -24,7 +26,7 @@ class BazaarIGUISub {
 		igui.setCloseItem(22);
 		for(int subsub = 0; subsub<9; subsub++) {
 			ItemStack item = category.getSubSub()[igui.currentSub - 1][subsub];
-			if(item == null || item.getType() == Material.AIR) continue;
+			if(item == null || item.getType() == XMaterial.AIR.parseMaterial()) continue;
 			item = igui.setEnquiriesInLoreExact(item.clone(), igui.currentCategory, igui.currentSub, subsub + 1, false, 0, false, 0);
 			new BazaarInventoryItem(igui, item, subsub + 9, new Clickable() {
 				

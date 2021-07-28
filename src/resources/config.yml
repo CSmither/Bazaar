@@ -13,8 +13,10 @@ noItemsToSell: "&cYou don't have any items to sell!"
 
 noSellOffers: "&cCouldn't find any sell offer!"
 noSellOffersAvailablePrice: "&cThere are no sell offers available. Using predefined price"
-sellOfferSetup: "&eSell Offer Setup! &a%amount%&7x &r%displayname% &7for &6%price% coins"
+sellOfferSetup: "&eSell Offer Setup! &a%amount%&7x %displayname% &7for &6%price% coins"
+sellOfferFilled: "§6[Bazaar] §eYour §aSell Offer §efor §a%amount%§7x %displayname% §ewas filled!"
 
 noBuyOrders: "&cCouldn't find any buy orders for this item!"
 noBuyOrdersAvailablePrice: "&cThere are no buy orders available. Using predefined price"
-buyOrderSetup: "&eBuy Order Setup! &a%amount%&7x &r%displayname% &7for &6%price% coins"
+buyOrderSetup: "&eBuy Order Setup! &a%amount%&7x %displayname% &7for &6%price% coins"
+buyOrderFilled: "§6[Bazaar] §eYour §aBuy Order §efor §a%amount%§7x %displayname% §ewas filled!"

@@ -3,7 +3,6 @@ package de.ancash.bazaar.commands;
 import java.io.File;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import de.ancash.bazaar.Bazaar;
 import de.ancash.bazaar.gui.BazaarIGUI;
 import de.ancash.minecraft.ItemStackUtils;
+import de.ancash.minecraft.XMaterial;
 
 public class BazaarCMD implements CommandExecutor{
 
@@ -68,7 +68,7 @@ public class BazaarCMD implements CommandExecutor{
 					return true;
 				}
 				ItemStack toSave = player.getItemInHand().clone();
-				if(toSave == null || toSave.getType().equals(Material.AIR)) {
+				if(toSave == null || toSave.getType().equals(XMaterial.AIR.parseMaterial())) {
 					player.sendMessage("§cHold a valid item!");
 					return true;
 				}

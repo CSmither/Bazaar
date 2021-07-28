@@ -14,9 +14,12 @@ public class Response {
 	public final String NO_SELL_OFFER_AVAILABLE;
 	public final String SELL_OFFER_USING_PREDEFINED_PRICE;
 	public final String SELL_OFFER_SETUP;
+	public final String SELL_OFFER_FILLED;
+	
 	public final String NO_BUY_ORDER_AVAILABLE;
 	public final String BUY_ORDER_SETUP;
 	public final String BUY_ORDER_USING_PREDEFINED_PRICE;
+	public final String BUY_ORDER_FILLED;
 	
 	public Response(Bazaar pl) {
 		CATEGORY_IN_PROCESS = pl.getConfig().getString("categoryInProcess").replace("&", "§");
@@ -25,11 +28,15 @@ public class Response {
 		NO_ITEMS_TO_SELL = pl.getConfig().getString("noItemsToSell").replace("&", "§");
 		CANNOT_CREATE_ENQUIRY = pl.getConfig().getString("cannotCreateEnquiry").replace("&", "§");
 		NOTHIN_TO_CLAIM = pl.getConfig().getString("nothingToClaim").replace("&", "§");
+		
 		NO_SELL_OFFER_AVAILABLE = pl.getConfig().getString("noSellOffers").replace("&", "§");
 		SELL_OFFER_USING_PREDEFINED_PRICE = pl.getConfig().getString("noSellOffersAvailablePrice").replace("&", "§");
-		NO_BUY_ORDER_AVAILABLE = pl.getConfig().getString("noBuyOrders").replace("&","§");
 		SELL_OFFER_SETUP = pl.getConfig().getString("sellOfferSetup").replace("&", "§");
+		SELL_OFFER_FILLED = pl.getConfig().getString("sellOfferFilled").replace("&", "§");
+		
+		NO_BUY_ORDER_AVAILABLE = pl.getConfig().getString("noBuyOrders").replace("&","§");
 		BUY_ORDER_SETUP = pl.getConfig().getString("buyOrderSetup").replace("&", "§");
 		BUY_ORDER_USING_PREDEFINED_PRICE = pl.getConfig().getString("noBuyOrdersAvailablePrice").replace("&", "§");
+		BUY_ORDER_FILLED = pl.getConfig().getString("buyOrderFilled").replace("&", "§");
 	}
 }

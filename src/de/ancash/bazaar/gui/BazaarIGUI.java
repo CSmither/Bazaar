@@ -17,12 +17,16 @@ import de.ancash.bazaar.management.Category;
 import de.ancash.bazaar.management.SelfBalancingBST;
 import de.ancash.bazaar.management.SelfBalancingBSTNode;
 import de.ancash.datastructures.maps.CompactMap;
+import de.ancash.datastructures.tuples.Duplet;
+import de.ancash.datastructures.tuples.Tuple;
 import de.ancash.minecraft.ItemStackUtils;
+import de.ancash.minecraft.XMaterial;
 import de.ancash.minecraft.inventory.Clickable;
 import de.ancash.minecraft.inventory.IGUI;
 import de.ancash.minecraft.inventory.IGUIManager;
 import de.ancash.minecraft.inventory.InventoryItem;
 import de.ancash.misc.MathsUtils;
+import de.ancash.misc.Validate;
 
 public class BazaarIGUI extends IGUI{
 
@@ -58,8 +62,14 @@ public class BazaarIGUI extends IGUI{
 	static ItemStack sellInstantlyItem;
 	static ItemStack buyInstantlyItem;
 	static ItemStack CUSTOM_AMOUNT;
+	static ItemStack PICK_AMOUNT;
+	
 	public static void load(Bazaar pl) {
-		if(pl == null) throw new IllegalArgumentException("Lel");
+		Validate.notNull(pl);
+		PICK_AMOUNT = new ItemStack(XMaterial.OAK_SIGN.parseMaterial());
+		ItemMeta im = PICK_AMOUNT.getItemMeta();
+		im.setDisplayName("0");
+		PICK_AMOUNT.setItemMeta(im);
 		closeInventoryItem = ItemStackUtils.get(pl.getInvConfig(), "inventory.close");
 		backGroundItem = ItemStackUtils.get(pl.getInvConfig(), "inventory.background");		
 		createSellOfferItem = ItemStackUtils.get(pl.getInvConfig(), "inventory.opt_inv.create_sell_offer");
@@ -67,10 +77,10 @@ public class BazaarIGUI extends IGUI{
 		sellInstantlyItem= ItemStackUtils.get(pl.getInvConfig(), "inventory.opt_inv.sellInsta");
 		buyInstantlyItem = ItemStackUtils.get(pl.getInvConfig(), "inventory.opt_inv.buyInsta");
 		CUSTOM_AMOUNT = ItemStackUtils.get(pl.getInvConfig(), "inventory.custom-amount");
-		BazaarIGUICreateBuyOrder.load(pl);
-		BazaarIGUICreateSellOffer.load(pl);
-		BazaarIGUIBuyInstantly.load(pl);
-		BazaarIGUIManageEnquiries.load(pl);
+		BazaarIGUICreateBuyOrder.INSTANCE.load(pl);
+		BazaarIGUICreateSellOffer.INSTANCE.load(pl);
+		BazaarIGUIBuyInstantly.INSTANCE.load(pl);
+		BazaarIGUIManageEnquiries.INSTANCE.load(pl);
 	}
 	
 	BazaarIGUIType currentGUIType;
@@ -143,7 +153,7 @@ public class BazaarIGUI extends IGUI{
 	 * @return
 	 */
 	public boolean setCategory(int c) {
-		return BazaarIGUIMain.setCategory(this, c);
+		return BazaarIGUIMain.INSTANCE.setCategory(this, c);
 	}
 	
 	/**
@@ -152,7 +162,7 @@ public class BazaarIGUI extends IGUI{
 	 * @param sub
 	 */
 	public void openSub(int sub) {
-		BazaarIGUISub.open(this, sub);
+		BazaarIGUISub.INSTANCE.open(this, sub);
 	}
 	
 	/**
@@ -162,7 +172,7 @@ public class BazaarIGUI extends IGUI{
 	 * @param subsub
 	 */
 	public void openSubSub(int subsub) {
-		BazaarIGUISubSub.openSubSub(this, subsub);
+		BazaarIGUISubSub.INSTANCE.openSubSub(this, subsub);
 	}
 	
 	/**
@@ -204,14 +214,14 @@ public class BazaarIGUI extends IGUI{
 			double sellOfferHighest= sellOffer.isEmpty() ? 0 : sellOffer.getMax().getKey();
 			double buyOrderLowest = buyOrder.isEmpty() ? 0 : buyOrder.getMin().getKey();
 			double buyOrderHighest= buyOrder.isEmpty() ? 0 : buyOrder.getMax().getKey();
-			placeholder.put("%offers_price_lowest%", sellOfferHighest == 0 ? "§cN/A" : "§6" + sellOfferLowest + " coins");
-			placeholder.put("%offers_price_highest%", sellOfferHighest == 0 ? "§cN/A" : "§6" + sellOfferHighest + " coins");
-			placeholder.put("%orders_price_lowest%", buyOrderLowest == 0 ? "§cN/A" : "§6" + buyOrderLowest + " coins");
-			placeholder.put("%orders_price_highest%", buyOrderLowest == 0 ? "§cN/A" : "§6" + buyOrderHighest + " coins");
-			placeholder.put("%offers_price_lowest_stack%", sellOfferHighest == 0 ? "§cN/A" : "§6" + MathsUtils.round(sellOfferLowest * 64, 2)+ " coins");
-			placeholder.put("%offers_price_highest_stack%", sellOfferHighest == 0 ? "§cN/A" : "§6" + MathsUtils.round(sellOfferHighest * 64, 2) + " coins");
-			placeholder.put("%orders_price_lowest_stack%", buyOrderLowest == 0 ? "§cN/A" : "§6" + MathsUtils.round(buyOrderLowest * 64, 2) + " coins");
-			placeholder.put("%orders_price_highest_stack%", buyOrderLowest == 0 ? "§cN/A" : "§6" + MathsUtils.round(buyOrderHighest * 64, 2) + " coins");
+			placeholder.put("%offers_price_lowest%", sellOfferHighest == 0 ? "§cN/A" : "" + sellOfferLowest);
+			placeholder.put("%offers_price_highest%", sellOfferHighest == 0 ? "§cN/A" : "" + sellOfferHighest);
+			placeholder.put("%orders_price_lowest%", buyOrderLowest == 0 ? "§cN/A" : "" + buyOrderLowest);
+			placeholder.put("%orders_price_highest%", buyOrderLowest == 0 ? "§cN/A" : "" + buyOrderHighest);
+			placeholder.put("%offers_price_lowest_stack%", sellOfferHighest == 0 ? "§cN/A" : "" + MathsUtils.round(sellOfferLowest * 64, 2));
+			placeholder.put("%offers_price_highest_stack%", sellOfferHighest == 0 ? "§cN/A" : "" + MathsUtils.round(sellOfferHighest * 64, 2));
+			placeholder.put("%orders_price_lowest_stack%", buyOrderLowest == 0 ? "§cN/A" : "" + MathsUtils.round(buyOrderLowest * 64, 2));
+			placeholder.put("%orders_price_highest_stack%", buyOrderLowest == 0 ? "§cN/A" : "" + MathsUtils.round(buyOrderHighest * 64, 2));
 			
 			if(topBuyOrders)
 				getTopBuyOrders(placeholder, tBOcnt);
@@ -365,6 +375,14 @@ public class BazaarIGUI extends IGUI{
 	static double getMinSellOfferPrice(BazaarIGUI igui) {
 		SelfBalancingBSTNode min = Category.getCategory(igui.currentCategory).getSellOffers(igui.currentSub, igui.currentSubSub).getMin();
 		return min == null ? Category.getCategory(igui.currentCategory).getEmptyPrices()[igui.currentSub - 1][igui.currentSubSub - 1] : min.getKey();
+	}
+	
+	static Duplet<Double, String> getSpread(double minSellOfferPrice, double maxBuyOrderPrice, int percentage) {
+		StringBuilder builder = new StringBuilder();
+		double spread = MathsUtils.round(minSellOfferPrice - maxBuyOrderPrice, 2);
+		builder.append("§6" + minSellOfferPrice + " §7- §6" + maxBuyOrderPrice + " §7= §6" + spread);
+		Duplet<Double, String> pair = Tuple.of(spread*((double) percentage/100), builder.toString());
+		return pair;
 	}
 	
 	static ItemStack setType(BazaarIGUI igui, ItemStack item) {

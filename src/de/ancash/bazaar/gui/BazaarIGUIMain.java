@@ -1,6 +1,5 @@
 package de.ancash.bazaar.gui;
 
-import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.ItemStack;
@@ -9,11 +8,14 @@ import de.ancash.bazaar.management.Category;
 import de.ancash.bazaar.management.PlayerManager;
 import de.ancash.datastructures.maps.CompactMap;
 import de.ancash.minecraft.ItemStackUtils;
+import de.ancash.minecraft.XMaterial;
 import de.ancash.minecraft.inventory.Clickable;
 
-class BazaarIGUIMain {
+enum BazaarIGUIMain {
 	
-	public static boolean setCategory(BazaarIGUI igui, int newCat) {
+	INSTANCE;
+	
+	public boolean setCategory(BazaarIGUI igui, int newCat) {
 		if(!Category.exists(newCat)) return false;
 		boolean switchCat = newCat != igui.currentCategory;
 		igui.currentCategory = newCat;
@@ -28,10 +30,9 @@ class BazaarIGUIMain {
 		igui.clearInventoryItems();
 		igui.setCloseItem(40);
 		Category category = Category.getCategory(newCat);
-		
 		for(int sub = 1; sub <= 18; sub++) {
 			ItemStack is = category.getSub()[sub - 1];
-			if(is == null || is.getType() == Material.STAINED_GLASS_PANE) continue;
+			if(is == null || is.getType() == XMaterial.GRAY_STAINED_GLASS_PANE.parseMaterial()) continue;
 			is = igui.setEnquiriesInLore(is.clone(), newCat, sub);
 			new BazaarInventoryItem(igui, is, Category.getSlotByID(sub), new Clickable() {
 				
@@ -43,7 +44,6 @@ class BazaarIGUIMain {
 				
 			}).add();
 		}
-		
 		for(int cat = 0; cat<5; cat++) {
 			ItemStack is = igui.getItem(cat * 9);
 			if(cat + 1 == newCat) is.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
@@ -65,7 +65,7 @@ class BazaarIGUIMain {
 			
 			@Override
 			public void onClick(int slot, boolean shift, InventoryAction action, boolean topInventory) {
-				BazaarIGUIManageEnquiries.manageEnquiries(igui);
+				BazaarIGUIManageEnquiries.INSTANCE.manageEnquiries(igui);
 			}
 		});
 		return true;

@@ -15,8 +15,8 @@ import de.ancash.bazaar.management.Category;
 import de.ancash.bazaar.management.Enquiry;
 import de.ancash.bazaar.management.PlayerManager;
 import de.ancash.bazaar.management.SelfBalancingBSTNode;
-import de.ancash.bazaar.management.Enquiry.EnquiryTypes;
-import de.ancash.bazaar.utils.InventoryUtils;
+import de.ancash.bazaar.management.Enquiry.EnquiryType;
+import de.ancash.minecraft.InventoryUtils;
 import de.ancash.bazaar.utils.MathsUtils;
 import de.ancash.datastructures.maps.CompactMap;
 import de.ancash.datastructures.tuples.Triplet;
@@ -25,19 +25,21 @@ import de.ancash.minecraft.ItemStackUtils;
 import de.ancash.minecraft.inventory.Clickable;
 import de.ancash.yaml.configuration.file.YamlFile;
 
-class BazaarIGUIManageEnquiries {
+enum BazaarIGUIManageEnquiries {
 	
-	private static String TITLE;
-	private static ItemStack SELL_OFFER_TEMPLATE;
-	private static ItemStack BUY_ORDER_TEMPLATE;
+	INSTANCE;
 	
-	static void load(Bazaar pl) {
+	private String TITLE;
+	private ItemStack SELL_OFFER_TEMPLATE;
+	private ItemStack BUY_ORDER_TEMPLATE;
+	
+	void load(Bazaar pl) {
 		TITLE = pl.getInvConfig().getString("inventory.manage.title");
 		SELL_OFFER_TEMPLATE = ItemStackUtils.get(pl.getInvConfig(), "inventory.manage.sell-offer");
 		BUY_ORDER_TEMPLATE = ItemStackUtils.get(pl.getInvConfig(), "inventory.manage.buy-order");
 	}
 	
-	static void manageEnquiries(BazaarIGUI igui) {
+	public void manageEnquiries(BazaarIGUI igui) {
 		igui.newInventory(TITLE, 45);
 		igui.clearInventoryItems();
 		igui.setBackground(IntStream.range(0, 9).toArray());
@@ -76,7 +78,7 @@ class BazaarIGUIManageEnquiries {
 				
 				@Override
 				public void onClick(int slot, boolean shift, InventoryAction action, boolean topInventory) {
-					collectFromFile(igui, price, category.getCategory(), infos.getSecond(), infos.getThird(), key, EnquiryTypes.SELL_OFFER);
+					collectFromFile(igui, price, category.getCategory(), infos.getSecond(), infos.getThird(), key, EnquiryType.SELL_OFFER);
 				}
 			});
 			slot++;
@@ -109,17 +111,17 @@ class BazaarIGUIManageEnquiries {
 	
 				@Override
 				public void onClick(int slot, boolean shift, InventoryAction action, boolean topInventory) {
-					collectFromFile(igui, price, category.getCategory(), infos.getSecond(), infos.getThird(), key, EnquiryTypes.BUY_ORDER);
+					collectFromFile(igui, price, category.getCategory(), infos.getSecond(), infos.getThird(), key, EnquiryType.BUY_ORDER);
 				}
 			});
 			slot++;
 		}
 	}
 	
-	private static void collectFromFile(BazaarIGUI igui, double price, int category, int show, int sub, String uuid, EnquiryTypes type) {
+	private void collectFromFile(BazaarIGUI igui, double price, int category, int show, int sub, String uuid, EnquiryType type) {
 		Bazaar pl = igui.plugin;
 		Player player = Bukkit.getPlayer(igui.getId());
-		File f = new File("plugins/Bazaar/player/" + player.getUniqueId().toString() + "/" + (type.equals(EnquiryTypes.BUY_ORDER) ? "buy_order.yml" : "sell_offer.yml"));
+		File f = new File("plugins/Bazaar/player/" + player.getUniqueId().toString() + "/" + (type.equals(EnquiryType.BUY_ORDER) ? "buy_order.yml" : "sell_offer.yml"));
 		YamlFile fc = pl.getEnquiryUtils().getYamlFile(f);
 		if(fc.getInt(uuid + ".claimable") == 0) {
 			player.sendMessage(pl.getResponse().NOTHIN_TO_CLAIM);
@@ -135,7 +137,7 @@ class BazaarIGUIManageEnquiries {
 			player.sendMessage("§6Bazaar! §7Claimed §6" + coins + " coins §7from selling §a" + claimable + "§7x " + Category.getCategory(category).getSubSub()[show - 1][sub - 1].getItemMeta().getDisplayName() + " §7at §6" + price + " §7each!");
 			fc.set(uuid + ".claimable", 0);
 			fc.set(uuid + ".lastEdit", System.currentTimeMillis());
-			SelfBalancingBSTNode node = Category.getCategory(category).get(EnquiryTypes.SELL_OFFER, show, sub, price);
+			SelfBalancingBSTNode node = Category.getCategory(category).get(EnquiryType.SELL_OFFER, show, sub, price);
 			if(node != null && node.contains(UUID.fromString(uuid))){
 				Enquiry e = node.get(UUID.fromString(uuid));
 				if(e.getLeft() == 0) {
@@ -150,7 +152,7 @@ class BazaarIGUIManageEnquiries {
 			}
 			break;
 		case BUY_ORDER:
-			int freeSlots = InventoryUtils.getFreeSlots(player);
+			int freeSlots = InventoryUtils.getFreeSlots(player.getInventory());
 			if(freeSlots == 0) {
 				player.sendMessage(pl.getResponse().INVENTORY_FULL);
 				manageEnquiries(igui);
@@ -158,7 +160,7 @@ class BazaarIGUIManageEnquiries {
 			}
 			claimable = fc.getInt(uuid + ".claimable");
 			int adding = 0;
-			node = Category.getCategory(category).get(EnquiryTypes.BUY_ORDER, show, sub, price);
+			node = Category.getCategory(category).get(EnquiryType.BUY_ORDER, show, sub, price);
 			Enquiry e = null;
 			if(node != null && node.contains(UUID.fromString(uuid)))
 				e = node.get(UUID.fromString(uuid));
