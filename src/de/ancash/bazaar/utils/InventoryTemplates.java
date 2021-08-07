@@ -11,9 +11,10 @@ public class InventoryTemplates {
 		this.original = inv;
 	}
 	
-	public Inventory getOriginal() {
+	
+	/*public Inventory getOriginal() {
 		return original;
-	}
+	}*/
 	
 	public ItemStack[] getContents() {
 		return original.getContents().clone();

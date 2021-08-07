@@ -1,4 +1,4 @@
-package de.ancash.bazaar.gui;
+package de.ancash.bazaar.gui.safe;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -6,6 +6,7 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.ItemStack;
 
 import de.ancash.bazaar.Bazaar;
+import de.ancash.bazaar.gui.inventory.BazaarInventoryType;
 import de.ancash.bazaar.management.Category;
 import de.ancash.bazaar.management.SelfBalancingBST;
 import de.ancash.bazaar.management.SelfBalancingBSTNode;
@@ -17,7 +18,7 @@ import de.ancash.minecraft.anvilgui.AnvilGUI;
 import de.ancash.minecraft.inventory.Clickable;
 import net.milkbowl.vault.economy.Economy;
 
-import static de.ancash.bazaar.gui.BazaarIGUI.*;
+import static de.ancash.bazaar.gui.safe.BazaarIGUI.*;
 
 import java.util.UUID;
 
@@ -40,7 +41,7 @@ enum BazaarIGUIBuyInstantly {
 	
 	public void openBuyInstantlyInventory(BazaarIGUI igui) {
 		igui.unlock();
-		igui.currentGUIType = BazaarIGUIType.BUY_INSTANTLY;
+		igui.currentGUIType = BazaarInventoryType.BUY_INSTANTLY;
 		if(Category.getCategory(igui.currentCategory).getSellOffers(igui.currentSub, igui.currentSubSub).isEmpty()) {
 			BazaarIGUISubSub.INSTANCE.openSubSub(igui, igui.currentSubSub);
 			return;

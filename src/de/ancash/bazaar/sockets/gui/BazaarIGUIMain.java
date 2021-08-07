@@ -1,9 +1,11 @@
-package de.ancash.bazaar.gui;
+package de.ancash.bazaar.sockets.gui;
 
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.ItemStack;
 
+import de.ancash.bazaar.gui.inventory.BazaarInventoryItem;
+import de.ancash.bazaar.gui.inventory.BazaarInventoryType;
 import de.ancash.bazaar.management.Category;
 import de.ancash.bazaar.management.PlayerManager;
 import de.ancash.datastructures.maps.CompactMap;
@@ -19,14 +21,14 @@ enum BazaarIGUIMain {
 		if(!Category.exists(newCat)) return false;
 		boolean switchCat = newCat != igui.currentCategory;
 		igui.currentCategory = newCat;
-		igui.currentGUIType = BazaarIGUIType.MAIN;
+		igui.currentGUIType = BazaarInventoryType.MAIN;
 		if(switchCat) {
-			igui.title = igui.plugin.bazaarTemplate.getContents()[(newCat - 1) * 9].getItemMeta().getDisplayName();
+			igui.title = igui.plugin.getTemplate().getContents()[(newCat - 1) * 9].getItemMeta().getDisplayName();
 			igui.newInventory(igui.title, 45);
 		} else {
 			igui.clearInventoryItems();
 		}
-		igui.setContents(igui.plugin.bazaarTemplate.getContents());
+		igui.setContents(igui.plugin.getTemplate().getContents());
 		igui.clearInventoryItems();
 		igui.setCloseItem(40);
 		Category category = Category.getCategory(newCat);

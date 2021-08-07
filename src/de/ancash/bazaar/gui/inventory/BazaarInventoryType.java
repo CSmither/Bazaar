@@ -1,6 +1,6 @@
-package de.ancash.bazaar.gui;
+package de.ancash.bazaar.gui.inventory;
 
-public enum BazaarIGUIType {
+public enum BazaarInventoryType {
 
 	MAIN,
 	VIEW_ENQUIRIES,

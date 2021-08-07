@@ -1,4 +1,4 @@
-package de.ancash.bazaar.gui;
+package de.ancash.bazaar.sockets.gui;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -6,6 +6,8 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.ItemStack;
 
 import de.ancash.bazaar.Bazaar;
+import de.ancash.bazaar.gui.inventory.BazaarInventoryItem;
+import de.ancash.bazaar.gui.inventory.BazaarInventoryType;
 import de.ancash.bazaar.management.BuyOrder;
 import de.ancash.bazaar.management.Category;
 import de.ancash.bazaar.management.PlayerManager;
@@ -15,7 +17,7 @@ import de.ancash.minecraft.ItemStackUtils;
 import de.ancash.minecraft.anvilgui.AnvilGUI;
 import de.ancash.minecraft.inventory.Clickable;
 
-import static de.ancash.bazaar.gui.BazaarIGUI.*;
+import static de.ancash.bazaar.sockets.gui.BazaarIGUI.*;
 import static de.ancash.misc.MathsUtils.round;
 
 import java.util.UUID;
@@ -54,7 +56,7 @@ enum BazaarIGUICreateBuyOrder {
 	
 	public void openCreateBuyOrder(BazaarIGUI igui) {
 		igui.unlock();
-		igui.currentGUIType = BazaarIGUIType.CREATE_BUY_ORDER;
+		igui.currentGUIType = BazaarInventoryType.CREATE_BUY_ORDER;
 		igui.newInventory(TITLE, 27);
 		igui.clearInventoryItems();
 		igui.setBackground(BazaarIGUI.INVENTORY_SIZE_TWNTY_SVN);

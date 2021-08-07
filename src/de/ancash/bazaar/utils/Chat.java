@@ -1,8 +1,14 @@
 package de.ancash.bazaar.utils;
 
+import org.bukkit.Bukkit;
+
 public class Chat {
 
 	private static String prefix = "[Bazaar]";
+	
+	public static void sendMessage(String msg) {
+		sendMessage(msg, ChatLevel.INFO);
+	}
 	
 	public static void sendMessage(String msg, ChatLevel level) {
 		switch (level) {
@@ -10,10 +16,10 @@ public class Chat {
 			System.out.println(prefix + " " + msg);
 			break;
 		case WARN:
-			System.err.println(prefix + " " + msg);
+			Bukkit.getLogger().warning(prefix + " " + msg);
 			break;
 		case FATAL:
-			System.err.println(prefix + " " + msg);
+			Bukkit.getLogger().severe(prefix + " " + msg);
 			break;
 		default:
 			break;

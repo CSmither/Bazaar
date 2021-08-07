@@ -1,8 +1,10 @@
-package de.ancash.bazaar.gui;
+package de.ancash.bazaar.sockets.gui;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryAction;
 
+import de.ancash.bazaar.gui.inventory.BazaarInventoryItem;
+import de.ancash.bazaar.gui.inventory.BazaarInventoryType;
 import de.ancash.bazaar.management.Category;
 import de.ancash.minecraft.InventoryUtils;
 import de.ancash.datastructures.maps.CompactMap;
@@ -14,7 +16,7 @@ enum BazaarIGUISubSub {
 	INSTANCE;
 	
 	public void openSubSub(BazaarIGUI igui, int subsub) {
-		igui.currentGUIType = BazaarIGUIType.SUBSUB;
+		igui.currentGUIType = BazaarInventoryType.SUBSUB;
 		igui.currentSubSub = subsub;
 		Category category = Category.getCategory(igui.currentCategory);
 

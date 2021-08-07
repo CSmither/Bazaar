@@ -8,6 +8,8 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.simpleyaml.configuration.file.YamlFile;
+import org.simpleyaml.exceptions.InvalidConfigurationException;
 
 import de.ancash.bazaar.Bazaar;
 import de.ancash.bazaar.management.Enquiry.EnquiryType;
@@ -16,8 +18,6 @@ import de.ancash.bazaar.utils.Chat.ChatLevel;
 import de.ancash.datastructures.maps.CompactMap;
 import de.ancash.minecraft.XMaterial;
 import de.ancash.misc.Validate;
-import de.ancash.yaml.configuration.file.YamlFile;
-import de.ancash.yaml.exceptions.InvalidConfigurationException;
 
 public class EnquiryUtils {
 

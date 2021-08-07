@@ -2,6 +2,7 @@ package de.ancash.bazaar;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
@@ -15,22 +16,43 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import de.ancash.ILibrary;
 import de.ancash.bazaar.commands.BazaarCMD;
+import de.ancash.bazaar.gui.BazaarBuyInstantlyInv;
+import de.ancash.bazaar.gui.BazaarCreateBuyOrderInv;
+import de.ancash.bazaar.gui.BazaarCreateSellOfferInv;
 import de.ancash.bazaar.gui.BazaarIGUI;
+import de.ancash.bazaar.gui.BazaarMainInv;
+import de.ancash.bazaar.gui.BazaarManageEnquiriesInv;
+import de.ancash.bazaar.gui.BazaarSellInstantlyInv;
+import de.ancash.bazaar.gui.BazaarSubInv;
+import de.ancash.bazaar.gui.BazaarSubSubInv;import de.ancash.bazaar.gui.inventory.BazaarInventoryClassManager;
+import de.ancash.bazaar.gui.inventory.BazaarInventoryObjects;
 import de.ancash.bazaar.listeners.Listeners;
 import de.ancash.bazaar.management.Category;
 import de.ancash.bazaar.management.EnquiryUtils;
 import de.ancash.bazaar.management.PlayerManager;
+import de.ancash.bazaar.management.Enquiry.EnquiryType;
+import de.ancash.bazaar.sockets.ChatClientPacketReceiveListener;
+import de.ancash.bazaar.sockets.packets.BazaarEnquiryPacket;
+import de.ancash.bazaar.sockets.packets.BazaarRequestPacket;
+import de.ancash.bazaar.sockets.packets.BazaarResponsePacket;
 import de.ancash.bazaar.utils.Chat;
 import de.ancash.bazaar.utils.Chat.ChatLevel;
 import de.ancash.bazaar.utils.InventoryTemplates;
 import de.ancash.bazaar.utils.Response;
+import de.ancash.libs.org.bukkit.event.EventManager;
 import de.ancash.minecraft.ItemStackUtils;
 import de.ancash.misc.FileUtils;
+import de.ancash.sockets.packet.PacketCallback;
+
 import net.milkbowl.vault.economy.Economy;
+
+import static de.ancash.bazaar.utils.Chat.*;
 
 public class Bazaar extends JavaPlugin{
 	
+	private final BazaarInventoryClassManager clazzManager = new BazaarInventoryClassManager();
 	private EnquiryUtils enquiryUtils;
 	private Category category;
 	
@@ -40,17 +62,17 @@ public class Bazaar extends JavaPlugin{
 	private final FileConfiguration cfg = YamlConfiguration.loadConfiguration(config);
 	
 	private Bazaar plugin;	
-	public InventoryTemplates bazaarTemplate;
+	private InventoryTemplates bazaarTemplate;
 	private int TAX;
 	
 	private static final Logger log = Logger.getLogger("Minecraft");
     private Economy econ = null;
     private Response response;
-    
+        
 	public void onEnable() {
 		final long now = System.currentTimeMillis();
 		plugin = this;
-		Chat.sendMessage("Loading..", ChatLevel.INFO);
+		sendMessage("Loading...", ChatLevel.INFO);
 		if (!setupEconomy() ) {
             log.severe(String.format("[%s] - Disabled due to no Vault dependency found!", getDescription().getName()));
             getServer().getPluginManager().disablePlugin(this);
@@ -58,24 +80,43 @@ public class Bazaar extends JavaPlugin{
         }
 		
 		loadFiles();
-		TAX = cfg.getInt("tax");
-		response = new Response(this);
-		BazaarIGUI.load(this);
-		loadTemplate();
-		category = new Category(this);
+		
+		if(!cfg.getBoolean("multipleServers")) {
+			setupSingleServer();
+		} else {
+			setupSocketsSupport();
+		}
 				
 		new Thread(new Runnable() {
 			
 			@Override
 			public synchronized void run() {
-				enquiryUtils = new EnquiryUtils(plugin);
-				enquiryUtils.load();
-				new Listeners(plugin);
-				registerCommands();
-				Bukkit.getOnlinePlayers().stream().map(Player::getUniqueId).forEach(PlayerManager::newPlayerManager);
+				
+				if(cfg.getBoolean("multipleServers")) {
+					EventManager.registerEvents(new ChatClientPacketReceiveListener(), this);
+				}
+				try {
+					BazaarEnquiryPacket cep = new BazaarEnquiryPacket(EnquiryType.SELL_OFFER, UUID.fromString("64fce50d-e7b7-4c45-88cf-9ab759f411ca"), 99D, 100, 1, 1, 1);
+					ILibrary.getInstance().send(cep.getPacket());
+					cep = new BazaarEnquiryPacket(EnquiryType.BUY_ORDER, UUID.fromString("64fce50d-e7b7-4c45-88cf-9ab759f411ca"), 99D, 100, 1, 1, 1);
+					ILibrary.getInstance().send(cep.getPacket());
+					
+					BazaarRequestPacket brp = new BazaarRequestPacket(BazaarRequestPacket.Type.CLAIMABLE, 1, 1, 1, new PacketCallback() {
+						
+						@Override
+						public void call(Object arg0) {
+							BazaarResponsePacket resp = (BazaarResponsePacket) arg0;
+							System.out.println("Callback called:");
+							resp.getEntries().forEach(System.out::println);
+						}
+					}, UUID.fromString("64fce50d-e7b7-4c45-88cf-9ab759f411ca"));
+					ILibrary.getInstance().send(brp.getPacket());
+				} catch(IOException e) {
+					e.printStackTrace();
+				}
 				Chat.sendMessage("Done(" + ((double) (System.currentTimeMillis() - now) / 1000) + "s)!", ChatLevel.INFO);
 			}
-		}, "BazaarEnquiryLoader").start();
+		}, "BazaarEnquiryLoader");
 	}
 	
 	public void onDisable() {
@@ -86,6 +127,29 @@ public class Bazaar extends JavaPlugin{
 		Chat.sendMessage("Saving took " + (System.currentTimeMillis() - now) + "ms",ChatLevel.INFO);
 	}
 
+	private void setupSingleServer() {
+		sendMessage("Registering classes for single server...");
+		clazzManager.register(BazaarBuyInstantlyInv.class);
+		clazzManager.register(BazaarCreateBuyOrderInv.class);
+		clazzManager.register(BazaarCreateSellOfferInv.class);
+		clazzManager.register(BazaarIGUI.class);
+		clazzManager.register(BazaarMainInv.class);
+		clazzManager.register(BazaarManageEnquiriesInv.class);
+		clazzManager.register(BazaarSellInstantlyInv.class);
+		clazzManager.register(BazaarSubInv.class);
+		clazzManager.register(BazaarSubSubInv.class);
+		sendMessage("Registered classes!");
+		enquiryUtils = new EnquiryUtils(plugin);
+		enquiryUtils.load();
+		new Listeners(plugin);
+		registerCommands();
+		Bukkit.getOnlinePlayers().stream().map(Player::getUniqueId).forEach(PlayerManager::newPlayerManager);
+	}
+	
+	private void setupSocketsSupport() {
+		registerCommands();
+	}
+	
 	private boolean setupEconomy() {
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
             return false;
@@ -110,7 +174,11 @@ public class Bazaar extends JavaPlugin{
 				FileUtils.copyInputStreamToFile(plugin.getResource("resources/inventory.yml"), inventoryFile);
 				Chat.sendMessage("Create new Inventory File", ChatLevel.INFO);
 			}
-			invConfig.load(inventoryFile);
+			BazaarInventoryObjects.load();
+			TAX = cfg.getInt("tax");
+			response = new Response(this);
+			loadTemplate();
+			category = new Category(this);
 		} catch (IOException | InvalidConfigurationException e) {
 			Chat.sendMessage("Error while loading files. Disabling plugin...", ChatLevel.FATAL);
 			Bukkit.getServer().getPluginManager().disablePlugin(plugin);
@@ -145,6 +213,13 @@ public class Bazaar extends JavaPlugin{
 		bazaarTemplate = new InventoryTemplates(inv);
 	}
 	
+	public BazaarInventoryClassManager getBazaarInvClassManager() {
+		return clazzManager;
+	}
+	
+	public InventoryTemplates getTemplate() {
+		return bazaarTemplate;
+	}
 	
 	public EnquiryUtils getEnquiryUtils() {
 		return enquiryUtils;

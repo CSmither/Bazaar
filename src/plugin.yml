@@ -1,5 +1,5 @@
 name: Bazaar
-version: 4.3
+version: 5.0.0
 main: de.ancash.bazaar.Bazaar
 depend: [ILibrary, Vault]
 api-version: 1.13

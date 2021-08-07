@@ -1,4 +1,4 @@
-package de.ancash.bazaar.gui;
+package de.ancash.bazaar.gui.safe;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -6,6 +6,8 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.ItemStack;
 
 import de.ancash.bazaar.Bazaar;
+import de.ancash.bazaar.gui.inventory.BazaarInventoryItem;
+import de.ancash.bazaar.gui.inventory.BazaarInventoryType;
 import de.ancash.bazaar.management.Category;
 import de.ancash.bazaar.management.PlayerManager;
 import de.ancash.bazaar.management.SellOffer;
@@ -16,7 +18,7 @@ import de.ancash.minecraft.ItemStackUtils;
 import de.ancash.minecraft.anvilgui.AnvilGUI;
 import de.ancash.minecraft.inventory.Clickable;
 
-import static de.ancash.bazaar.gui.BazaarIGUI.*;
+import static de.ancash.bazaar.gui.safe.BazaarIGUI.*;
 import static de.ancash.misc.MathsUtils.round;
 
 import java.util.UUID;
@@ -43,7 +45,7 @@ enum BazaarIGUICreateSellOffer {
 	}
 	
 	public void openCreateSellOffer(BazaarIGUI igui) {
-		igui.currentGUIType = BazaarIGUIType.CREATE_SELL_OFFER;
+		igui.currentGUIType = BazaarInventoryType.CREATE_SELL_OFFER;
 		//check if player has any items to sell
 		if(InventoryUtils.getContentAmount(Bukkit.getPlayer(igui.getId()).getInventory(), Category.getCategory(igui.currentCategory).getOriginal(igui.currentSub, igui.currentSubSub)) == 0)
 			return;

@@ -1,6 +1,7 @@
-package de.ancash.bazaar.gui;
+package de.ancash.bazaar.gui.safe;
 
 import java.io.File;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.IntStream;
 
@@ -9,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.simpleyaml.configuration.file.YamlFile;
 
 import de.ancash.bazaar.Bazaar;
 import de.ancash.bazaar.management.Category;
@@ -23,7 +25,6 @@ import de.ancash.datastructures.tuples.Triplet;
 import de.ancash.datastructures.tuples.Tuple;
 import de.ancash.minecraft.ItemStackUtils;
 import de.ancash.minecraft.inventory.Clickable;
-import de.ancash.yaml.configuration.file.YamlFile;
 
 enum BazaarIGUIManageEnquiries {
 	
@@ -46,8 +47,8 @@ enum BazaarIGUIManageEnquiries {
 		igui.setBackground(IntStream.range(36, 45).toArray());
 		igui.setCloseItem(40);
 		Player player = Bukkit.getPlayer(igui.getId());
-		CompactMap<String, CompactMap<String, Number>> sellOffer = PlayerManager.get(player.getUniqueId()).getSellOffer();
-		CompactMap<String, CompactMap<String, Number>> buyOrder = PlayerManager.get(player.getUniqueId()).getBuyOrder();
+		Map<String, Map<String, Number>> sellOffer = PlayerManager.get(player.getUniqueId()).getSellOffer();
+		Map<String, Map<String, Number>> buyOrder = PlayerManager.get(player.getUniqueId()).getBuyOrder();
 		
 		int slot = 9;
 		
@@ -193,5 +194,4 @@ enum BazaarIGUIManageEnquiries {
 		manageEnquiries(igui);
 		return;
 	}
-	
 }

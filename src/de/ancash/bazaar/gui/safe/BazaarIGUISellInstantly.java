@@ -1,4 +1,4 @@
-package de.ancash.bazaar.gui;
+package de.ancash.bazaar.gui.safe;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

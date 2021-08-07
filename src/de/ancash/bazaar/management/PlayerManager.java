@@ -2,20 +2,21 @@ package de.ancash.bazaar.management;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
+import org.simpleyaml.configuration.file.YamlFile;
+import org.simpleyaml.exceptions.InvalidConfigurationException;
 
 import de.ancash.bazaar.utils.Chat;
 import de.ancash.bazaar.utils.Chat.ChatLevel;
-import de.ancash.datastructures.maps.CompactMap;
-import de.ancash.yaml.configuration.file.YamlFile;
-import de.ancash.yaml.exceptions.InvalidConfigurationException;
 
 public final class PlayerManager {
 	
-	private static CompactMap<UUID, PlayerManager> registered = new CompactMap<UUID, PlayerManager>();
+	private static Map<UUID, PlayerManager> registered = new HashMap<UUID, PlayerManager>();
 	
 	private UUID id;
 	private File sellOfferFile;
@@ -138,8 +139,8 @@ public final class PlayerManager {
 		return claimable;
 	}
 	
-	public CompactMap<String, CompactMap<String, Number>> getSellOffer() {
-		CompactMap<String, CompactMap<String, Number>> allSellOffer = new CompactMap<String, CompactMap<String, Number>>();
+	public Map<String, Map<String, Number>> getSellOffer() {
+		Map<String, Map<String, Number>> allSellOffer = new HashMap<String, Map<String, Number>>();
 		YamlFile fc = EnquiryUtils.instance.getYamlFile(sellOfferFile);
 		for(String id : fc.getKeys(false)) {
 			if(fc.getString(id) != null && fc.getString(id).equals("null")) continue;
@@ -151,7 +152,7 @@ public final class PlayerManager {
 			int show = fc.getInt(id + ".sub");
 			int sub = fc.getInt(id + ".subsub");
 			
-			CompactMap<String, Number> datas = new CompactMap<String, Number>();
+			Map<String, Number> datas = new HashMap<String, Number>();
 			datas.put("total", total);
 			datas.put("price", price);
 			datas.put("category", category);
@@ -179,8 +180,8 @@ public final class PlayerManager {
 		return allSellOffer;
 	}
 	
-	public CompactMap<String, CompactMap<String, Number>> getBuyOrder() {
-		CompactMap<String, CompactMap<String, Number>> allBuyOrder = new CompactMap<String, CompactMap<String, Number>>();
+	public Map<String, Map<String, Number>> getBuyOrder() {
+		Map<String, Map<String, Number>> allBuyOrder = new HashMap<String, Map<String, Number>>();
 		YamlFile fc = EnquiryUtils.instance.getYamlFile(buyOrderFile);
 		for(String id : fc.getKeys(false)) {
 			if(fc.getString(id) != null && fc.getString(id).equals("null")) continue;
@@ -192,7 +193,7 @@ public final class PlayerManager {
 			int show = fc.getInt(id + ".sub");
 			int sub = fc.getInt(id + ".subsub");
 			
-			CompactMap<String, Number> datas = new CompactMap<String, Number>();
+			Map<String, Number> datas = new HashMap<String, Number>();
 			datas.put("total", total);
 			datas.put("price", price);
 			datas.put("category", category);

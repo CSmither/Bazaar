@@ -1,4 +1,4 @@
-package de.ancash.bazaar.gui;
+package de.ancash.bazaar.gui.inventory;
 
 import org.bukkit.inventory.ItemStack;
 

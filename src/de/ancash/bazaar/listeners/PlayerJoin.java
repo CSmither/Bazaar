@@ -5,9 +5,9 @@ import java.io.IOException;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.simpleyaml.exceptions.InvalidConfigurationException;
 
 import de.ancash.bazaar.management.PlayerManager;
-import de.ancash.yaml.exceptions.InvalidConfigurationException;
 
 public class PlayerJoin implements Listener{
 

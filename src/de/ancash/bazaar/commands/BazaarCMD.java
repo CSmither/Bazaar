@@ -1,6 +1,7 @@
 package de.ancash.bazaar.commands;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -12,7 +13,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import de.ancash.bazaar.Bazaar;
-import de.ancash.bazaar.gui.BazaarIGUI;
+import de.ancash.bazaar.gui.inventory.AbstractBazaarIGUI;
+import de.ancash.bazaar.gui.inventory.BazaarInventoryClassManager;
 import de.ancash.minecraft.ItemStackUtils;
 import de.ancash.minecraft.XMaterial;
 
@@ -38,8 +40,18 @@ public class BazaarCMD implements CommandExecutor{
 						sender.sendMessage("§cYou don't have permission to do that!");
 						return true;
 					} else {
-						BazaarIGUI gui = new BazaarIGUI(pl, player.getUniqueId(), 45, "Bazaar");
-						player.openInventory(gui.getInventory());
+						AbstractBazaarIGUI igui;
+						try {
+							igui = pl.getBazaarInvClassManager().get(AbstractBazaarIGUI.class).getClass().getConstructor(BazaarInventoryClassManager.class).newInstance(pl.getBazaarInvClassManager());
+							igui.setTitle("Bazaar");
+							igui.setPlugin(pl);
+							igui.register(player.getUniqueId());
+						} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+								| InvocationTargetException | NoSuchMethodException | SecurityException e) {
+							e.printStackTrace();
+							return true;
+						}
+						player.openInventory(igui.getInventory());
 						return true;
 					}
 				}
@@ -53,8 +65,20 @@ public class BazaarCMD implements CommandExecutor{
 						sender.sendMessage("§cThat player is not online!");
 						return true;
 					}
-					BazaarIGUI gui = new BazaarIGUI(pl, target.getUniqueId(), 45, "Bazaar");
-					target.openInventory(gui.getInventory());
+					AbstractBazaarIGUI igui;
+					try {
+						igui = pl.getBazaarInvClassManager().get(AbstractBazaarIGUI.class).getClass().getConstructor(BazaarInventoryClassManager.class).newInstance(pl.getBazaarInvClassManager());
+						igui.setTitle("Bazaar");
+						igui.setPlugin(pl);
+						igui.register(player.getUniqueId());
+					} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+							| InvocationTargetException | NoSuchMethodException | SecurityException e) {
+						e.printStackTrace();
+						return true;
+					}
+					
+					player.openInventory(igui.getInventory());
+					
 					return true;
 				}
 				return false;
