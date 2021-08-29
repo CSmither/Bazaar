@@ -2,12 +2,12 @@ package de.ancash.bazaar.management;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.Validate;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -17,11 +17,9 @@ import de.ancash.bazaar.Bazaar;
 import de.ancash.bazaar.management.Enquiry.EnquiryType;
 import de.ancash.bazaar.utils.Chat;
 import de.ancash.bazaar.utils.Chat.ChatLevel;
-import de.ancash.datastructures.maps.CompactMap;
 import de.ancash.minecraft.ItemStackUtils;
+import de.ancash.minecraft.SerializableItemStack;
 import de.ancash.misc.FileUtils;
-
-import static de.ancash.minecraft.ItemStackUtils.legacyToNormal;
 
 public class Category {
 		
@@ -60,15 +58,17 @@ public class Category {
 		init();
 	}
 	
+	@SuppressWarnings("deprecation")
 	private void init() {
 		try {
-			Chat.sendMessage("Loading Categories...", ChatLevel.INFO);
+			Chat.sendMessage("Loading Categories...");
 			for(int i = 1; i<=5; i++) {
+				Chat.sendMessage("Loading items for Category " + i);
 				String catFilePath = plugin.getInvConfig().getString("inventory.categories." + i + ".file");
 				File catFile = new File(catFilePath);
 				if(!catFile.exists()) {
 					Chat.sendMessage("No File found for Category " + i + " in " + catFilePath, ChatLevel.WARN);
-					Chat.sendMessage("Creating new preconfigured File " + catFile.getName(), ChatLevel.INFO);
+					Chat.sendMessage("Creating new preconfigured File " + catFile.getName());
 					catFile.mkdirs();
 					catFile.delete();
 					FileUtils.copyInputStreamToFile(plugin.getResource("resources/category_" + i + ".yml"), catFile);
@@ -85,23 +85,26 @@ public class Category {
 				for(String path : fc.getKeys(false)) {
 					try {
 						int id = Integer.valueOf(path);
-						cat.sub[id - 1] = legacyToNormal(ItemStackUtils.get(fc, id + ".sub"));
+						cat.subCategories[id - 1] = new SubCategory(ItemStackUtils.get(fc, id + ".sub"));
+						
 						for(int sub = 1; sub<=9; sub++) {
-							if(fc.getString(path + ".subsub." + sub + ".original.type") == null && fc.getItemStack(path + ".subsub." + sub + ".original") == null) continue;
-							cat.allOriginal[id - 1][sub - 1] = legacyToNormal(ItemStackUtils.get(fc, path + ".subsub." + sub + ".original"));
-							cat.emptyPrices[id - 1][sub - 1] = fc.getDouble(path + ".subsub." + sub + ".default-price");
-							cat.subSub[id - 1][sub - 1] = legacyToNormal(ItemStackUtils.get(fc, path + ".subsub." + sub + ".show"));
+							if(fc.getString(path + ".subsub." + sub + ".original.type") == null && fc.getItemStack(path + ".subsub." + sub + ".original") == null && !fc.isString(path + ".subsub." + sub + ".original")) continue;
+							this.convertToBase64(fc, path + ".subsub." + sub + ".original");
+							ItemStack subSubShow = ItemStackUtils.get(fc, path + ".subsub." + sub + ".show");
+							ItemStack original = ItemStackUtils.get(fc, path + ".subsub." + sub + ".original");
+							Validate.notNull(subSubShow, "Could not load item with path: " + path + ".subsub." + sub + ".show (" + fc.getString(path + ".subsub." + sub + ".show") + ")");	
+							Validate.notNull(original, "Could not load item with path: " + path + ".subsub." + sub + ".original (" + fc.getString(path + ".subsub." + sub + ".original") + ")");
+							cat.subCategories[id - 1].setSubSubCategory(sub, new SubSubCategory(subSubShow, original, fc.getDouble(path + ".subsub." + sub + ".default-price")));
 						}
 					} catch (Exception e) {
 						Chat.sendMessage("Error While Loading Item with Id " + path + " in Category " + i + ": " + e, ChatLevel.WARN);
+						try {
+							cat.subCategories[Integer.valueOf(path) - 1] = null;
+						} catch(NumberFormatException exx) {}
 						continue;
 					}
 				}
-				categories[i -1] = cat;
-				for(int a = 1; a<=9; a++) {
-					cat.getSubBuyOrders(a);
-					cat.getSubSellOffers(a);
-				}
+				categories[i - 1] = cat;
 				fc.save(catFile);
 			}
 		} catch(IOException | InvalidConfigurationException ex) {
@@ -109,19 +112,17 @@ public class Category {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
+	private void convertToBase64(FileConfiguration fc, String path) throws ClassNotFoundException, IOException {
+		if(!fc.isString(path)) {
+			fc.set(path, new SerializableItemStack(ItemStackUtils.get(fc, path)).asBase64());
+			Chat.sendMessage("Converted original item (" + path + ")to Base64 String!");
+		}
+	}
+	
 	public Category(int category) {
 		this.category = category;
 		categories[category -1] = this;
-		for(int i = 0; i<18; i++) {
-			CompactMap<Integer, SelfBalancingBST> allSubSellOffer = new CompactMap<Integer, SelfBalancingBST>();
-			CompactMap<Integer, SelfBalancingBST> allSubBuyOrder = new CompactMap<Integer, SelfBalancingBST>();
-			for(int sub = 0; sub<9; sub++) {
-				allSubSellOffer.put(sub + 1, new SelfBalancingBST());
-				allSubBuyOrder.put(sub + 1, new SelfBalancingBST());
-			}
-			allBuyOrders.put(i + 1, allSubBuyOrder);
-			allSellOffers.put(i + 1, allSubSellOffer);
-		}
 	}
 
 	public int getCategory() {
@@ -130,52 +131,36 @@ public class Category {
 	
 	private final int category;
 	
-	private ItemStack[] sub = new ItemStack[18];
-	private ItemStack[][] allOriginal = new ItemStack[18][9];
-	private ItemStack[][] subSub= new ItemStack[18][9];
-	private Double[][] emptyPrices = new Double[18][9];
-	private CompactMap<Integer, CompactMap<Integer, SelfBalancingBST>> allSellOffers = new CompactMap<Integer, CompactMap<Integer, SelfBalancingBST>>();
-	private CompactMap<Integer, CompactMap<Integer, SelfBalancingBST>> allBuyOrders = new CompactMap<Integer, CompactMap<Integer, SelfBalancingBST>>();
+	private final SubCategory[] subCategories = new SubCategory[18];
 	
-	public Double[][] getEmptyPrices() {
-		return emptyPrices;
+	public double getEmptyPrice(int a, int b) {
+		if(subCategories[a - 1] == null) return -1;
+		return subCategories[a - 1].getSubSubCategory(b).getEmptyPrice();
 	}
 	
-	public ItemStack[] getSub() {
-		return sub;
+	public ItemStack getSubShow(int a) {
+		if(subCategories[a - 1] == null) return null;
+		return subCategories[a - 1].getShow();
 	}
 	
-	public ItemStack[][] getSubSub() {
-		return subSub;
-	}
-	
-	public ItemStack[][] getAllOriginal() {
-		return allOriginal;
+	public ItemStack getSubSubShow(int a, int subsub) {
+		if(subCategories[a - 1] == null || subCategories[a - 1].getSubSubCategory(subsub) == null) return null;
+		return subCategories[a - 1].getSubSubCategory(subsub).getShow();
 	}
 	
 	public ItemStack getOriginal(int a, int b) {
-		return allOriginal[a - 1][b - 1];
+		if(subCategories[a - 1] == null || subCategories[a - 1].getSubSubCategory(b) == null) return null;
+		return subCategories[a - 1].getSubSubCategory(b).getOriginal();
 	}
 	
-	public List<SelfBalancingBST> getAll() {
-		List<SelfBalancingBST> all = allBuyOrders.entrySet().stream().map(Map.Entry::getValue).map(CompactMap::values).flatMap(Collection::stream).collect(Collectors.toList());
-		all.addAll(allSellOffers.entrySet().stream().map(Map.Entry::getValue).map(CompactMap::values).flatMap(Collection::stream).collect(Collectors.toList()));
-		return all;
-	}
-		
-	private CompactMap<Integer, List<SelfBalancingBST>> allSellOffersInList = new CompactMap<>();
-	private CompactMap<Integer, List<SelfBalancingBST>> allBuyOrdersInList = new CompactMap<>();
-	
-	public List<SelfBalancingBST> getSubSellOffers(int show) {
-		if(!allSellOffersInList.containsKey(show)) 
-			allSellOffersInList.put(show,allSellOffers.entrySet().stream().filter(entry -> entry.getKey() == show).map(Map.Entry::getValue).map(CompactMap::values).flatMap(Collection::stream).collect(Collectors.toList()));
-		return allSellOffersInList.get(show);
+	public List<SelfBalancingBST> getAllSellOffers(int a) {
+		if(subCategories[a - 1] == null) return null;
+		return subCategories[a - 1].getAllSubSubCategories().stream().filter(s -> s != null).map(SubSubCategory::getSellOfferTree).collect(Collectors.toList());
 	}
 	
-	public List<SelfBalancingBST> getSubBuyOrders(int show) {
-		if(!allBuyOrdersInList.containsKey(show)) 
-			allBuyOrdersInList.put(show, allBuyOrders.entrySet().stream().filter(entry -> entry.getKey() == show).map(Map.Entry::getValue).map(CompactMap::values).flatMap(Collection::stream).collect(Collectors.toList()));
-		return allBuyOrdersInList.get(show);
+	public List<SelfBalancingBST> getAllBuyOrders(int a) {
+		if(subCategories[a - 1] == null) return null;
+		return subCategories[a - 1].getAllSubSubCategories().stream().filter(s -> s != null).map(SubSubCategory::getBuyOrderTree).collect(Collectors.toList());
 	}
 	
 	public SelfBalancingBSTNode get(EnquiryType t, int a, int b, double value) {
@@ -192,20 +177,20 @@ public class Category {
 	}
 	
 	public SelfBalancingBST getSellOffers(int a, int b) {
-		return allSellOffers.get(a).get(b);
+		return subCategories[a - 1].getSubSubCategory(b).getSellOfferTree();
 	}
 	
 	public SelfBalancingBST getBuyOrders(int a, int b) {
-		return allBuyOrders.get(a).get(b);
+		return subCategories[a - 1].getSubSubCategory(b).getBuyOrderTree();
 	}
 	
-	public CompactMap<UUID, Enquiry> getLowest(EnquiryType type, int a, int sub) {
+	public Map<UUID, Enquiry> getLowest(EnquiryType type, int a, int sub) {
 		SelfBalancingBST tree = getTree(type, a, sub);
 		if(tree == null) return null;
 		return tree.getMin().get();
 	}
 	
-	public CompactMap<UUID, Enquiry> getHighest(EnquiryType type, int a, int sub) {
+	public Map<UUID, Enquiry> getHighest(EnquiryType type, int a, int sub) {
 		SelfBalancingBST tree = getTree(type, a, sub);
 		if(tree == null) return null;
 		return tree.getMax().get();

@@ -281,8 +281,8 @@ inventory:
             displayname: "&aBuy Instantly"
             lore: 
             - " "
-            - "&7Price per unit: %offers_price_lowest%" #example: 2.9 coins; if no offer available, &cN/A will be displayed
-            - "&7Stack price: %offers_price_lowest_stack%" #example: 185.6 coins; if no offer available, &cN/A will be displayed
+            - "&7Price per unit: &6%offers_price_lowest%" #example: 2.9 coins; if no offer available, &cN/A will be displayed
+            - "&7Stack price: &6%offers_price_lowest_stack%" #example: 185.6 coins; if no offer available, &cN/A will be displayed
             - "  "
             - "&eClick to pick amount!"
    

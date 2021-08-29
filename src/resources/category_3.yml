@@ -1,10 +1,10 @@
 # PLACEHOLDER
 
-#%orders_price_highest% lowest price in all buy order
-#%orders_price_highest% highest price in all buy order
+#%orders_price_lowest% lowest price in all buy order
+#%orders_price_highest% coins highest price in all buy order
 #&7%orders_total%&7 total amount of buy orders
 #%orders_content% total amount of items in sell offers
-#%offers__price_lowest% lowest price in all sell offer
+#%offers_price_lowest% coins lowest price in all sell offer
 #%offers_price_highest% highest price in all sell offer
 #&7%offers_total%&7 total amount of sell offers
 #%offers_content% total amount of items in sell offers
@@ -31,10 +31,10 @@
                displayname: "&eRotten Flesg"
                lore:
                - ' '
-               - '&7Buy price: &7%offers_price_lowest%'
+               - '&7Buy price: &7%offers_price_lowest% coins'
                - '&8%offers_content%&8 in &8%offers_total%&8 offers'
                - '   '
-               - '&7Sell price: &7%orders_price_highest%'
+               - '&7Sell price: &7%orders_price_highest% coins'
                - '&8%orders_content%&8 in &8%orders_total%&8 offers'
          original:
             type: ROTTEN_FLESH
@@ -60,10 +60,10 @@
                displayname: "&eBone"
                lore:
                - ' '
-               - '&7Buy price: &7%offers_price_lowest%'
+               - '&7Buy price: &7%offers_price_lowest% coins'
                - '&8%offers_content%&8 in &8%offers_total%&8 offers'
                - '   '
-               - '&7Sell price: &7%orders_price_highest%'
+               - '&7Sell price: &7%orders_price_highest% coins'
                - '&8%orders_content%&8 in &8%orders_total%&8 offers'
          original:
             type: BONE
@@ -88,10 +88,10 @@
                displayname: "&eString"
                lore:
                - ' '
-               - '&7Buy price: &7%offers_price_lowest%'
+               - '&7Buy price: &7%offers_price_lowest% coins'
                - '&8%offers_content%&8 in &8%offers_total%&8 offers'
                - '   '
-               - '&7Sell price: &7%orders_price_highest%'
+               - '&7Sell price: &7%orders_price_highest% coins'
                - '&8%orders_content%&8 in &8%orders_total%&8 offers'
          original:
             type: STRING
@@ -116,10 +116,10 @@
                displayname: "&eSpider Eye"
                lore:
                - ' '
-               - '&7Buy price: &7%offers_price_lowest%'
+               - '&7Buy price: &7%offers_price_lowest% coins'
                - '&8%offers_content%&8 in &8%offers_total%&8 offers'
                - '   '
-               - '&7Sell price: &7%orders_price_highest%'
+               - '&7Sell price: &7%orders_price_highest% coins'
                - '&8%orders_content%&8 in &8%orders_total%&8 offers'
          original:
             type: SPIDER_EYE
@@ -144,10 +144,10 @@
                displayname: "&eGunpowder"
                lore:
                - ' '
-               - '&7Buy price: &7%offers_price_lowest%'
+               - '&7Buy price: &7%offers_price_lowest% coins'
                - '&8%offers_content%&8 in &8%offers_total%&8 offers'
                - '   '
-               - '&7Sell price: &7%orders_price_highest%'
+               - '&7Sell price: &7%orders_price_highest% coins'
                - '&8%orders_content%&8 in &8%orders_total%&8 offers'
          original:
             type: SULPHUR
@@ -172,10 +172,10 @@
                displayname: "&eEnder Pearl"
                lore:
                - ' '
-               - '&7Buy price: &7%offers_price_lowest%'
+               - '&7Buy price: &7%offers_price_lowest% coins'
                - '&8%offers_content%&8 in &8%offers_total%&8 offers'
                - '   '
-               - '&7Sell price: &7%orders_price_highest%'
+               - '&7Sell price: &7%orders_price_highest% coins'
                - '&8%orders_content%&8 in &8%orders_total%&8 offers'
          original:
             type: ENDER_PEARL
@@ -200,10 +200,10 @@
                displayname: "&eGhast Tear"
                lore:
                - ' '
-               - '&7Buy price: &7%offers_price_lowest%'
+               - '&7Buy price: &7%offers_price_lowest% coins'
                - '&8%offers_content%&8 in &8%offers_total%&8 offers'
                - '   '
-               - '&7Sell price: &7%orders_price_highest%'
+               - '&7Sell price: &7%orders_price_highest% coins'
                - '&8%orders_content%&8 in &8%orders_total%&8 offers'
          original:
             type: GHAST_TEAR
@@ -228,10 +228,10 @@
                displayname: "&eSlimeball"
                lore:
                - ' '
-               - '&7Buy price: &7%offers_price_lowest%'
+               - '&7Buy price: &7%offers_price_lowest% coins'
                - '&8%offers_content%&8 in &8%offers_total%&8 offers'
                - '   '
-               - '&7Sell price: &7%orders_price_highest%'
+               - '&7Sell price: &7%orders_price_highest% coins'
                - '&8%orders_content%&8 in &8%orders_total%&8 offers'
          original:
             type: SLIME_BALL
@@ -256,10 +256,10 @@
                displayname: "&eBlaze Rod"
                lore:
                - ' '
-               - '&7Buy price: &7%offers_price_lowest%'
+               - '&7Buy price: &7%offers_price_lowest% coins'
                - '&8%offers_content%&8 in &8%offers_total%&8 offers'
                - '   '
-               - '&7Sell price: &7%orders_price_highest%'
+               - '&7Sell price: &7%orders_price_highest% coins'
                - '&8%orders_content%&8 in &8%orders_total%&8 offers'
          original:
             type: BLAZE_ROD
@@ -284,10 +284,10 @@
                displayname: "&eMagma Cream"
                lore:
                - ' '
-               - '&7Buy price: &7%offers_price_lowest%'
+               - '&7Buy price: &7%offers_price_lowest% coins'
                - '&8%offers_content%&8 in &8%offers_total%&8 offers'
                - '   '
-               - '&7Sell price: &7%orders_price_highest%'
+               - '&7Sell price: &7%orders_price_highest% coins'
                - '&8%orders_content%&8 in &8%orders_total%&8 offers'
          original:
             type: MAGMA_CREAM

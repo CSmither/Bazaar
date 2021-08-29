@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.UUID;
 
+import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.simpleyaml.configuration.file.YamlFile;
@@ -17,7 +18,6 @@ import de.ancash.bazaar.utils.Chat;
 import de.ancash.bazaar.utils.Chat.ChatLevel;
 import de.ancash.datastructures.maps.CompactMap;
 import de.ancash.minecraft.XMaterial;
-import de.ancash.misc.Validate;
 
 public class EnquiryUtils {
 
@@ -28,6 +28,12 @@ public class EnquiryUtils {
 	public boolean isYamlFileLoaded(File file) {return alreadyLoaded.containsKey(file);}
 	public void addYamlFile(File file, YamlFile fc) {alreadyLoaded.put(file, fc);}
 	private Bazaar pl;
+	
+	private final Object lock = new Object();
+	
+	public Object getLock() {
+		return lock;
+	}
 	
 	public EnquiryUtils(Bazaar pl) {
 		Validate.isTrue(this.pl == null);
@@ -187,12 +193,12 @@ public class EnquiryUtils {
 		if(e.getLeft() == 0) {
 			if(p != null) {
 				if(e instanceof SellOffer) {
-					String name = cat.getSubSub()[e.getSub() - 1][e.getSubSub() - 1].getItemMeta().getDisplayName();
+					String name = cat.getSubSubShow(e.getSub(), e.getSubSub()).getItemMeta().getDisplayName();
 					p.sendMessage("§6[Bazaar] §eYour §aSell Offer §efor §a" + e.getAmount() + "§7x " + name + " §ewas filled!");
 				}
 				
 				if(e instanceof BuyOrder) {
-					String name = cat.getSubSub()[e.getSub() - 1][e.getSubSub() - 1].getItemMeta().getDisplayName();
+					String name = cat.getSubSubShow(e.getSub(), e.getSubSub()).getItemMeta().getDisplayName();
 					p.sendMessage("§6[Bazaar] §eYour §aBuy Order §efor §a" + e.getAmount() + "§7x " + name + " §ewas filled!");
 				}
 			}
@@ -230,7 +236,7 @@ public class EnquiryUtils {
 			Chat.sendMessage("Cannot load Item(" + a + ", " + b + ") for non-existing Category(" + cat + ")!", ChatLevel.WARN);
 			return false;
 		}
-		return a <= 18 && a > 0 && b >0 && b <= 9 && !Category.getCategory(cat).getSubSub()[a - 1][b - 1].getType().equals(XMaterial.AIR.parseMaterial());
+		return a <= 18 && a > 0 && b >0 && b <= 9 && Category.getCategory(cat).getSubSubShow(a, b) != null && !Category.getCategory(cat).getSubSubShow(a, b).getType().equals(XMaterial.AIR.parseMaterial());
 	}
 	
 	public void insert(Enquiry e) {
@@ -242,13 +248,15 @@ public class EnquiryUtils {
 			SelfBalancingBSTNode node_bo = null;
 			tree = Category.getCategory(e.getCategory()).getBuyOrders(e.getSub(), e.getSubSub());
 			node_bo = tree.get(e.getPrice(), tree.getRoot());
-			if(node_bo != null && node_bo.getKey() == e.getPrice()) {
-				while(node_bo.get().size() != 0 && so.getLeft() > 0) {
-					process(so, (BuyOrder) node_bo.getByTimeStamp());
+			synchronized (lock) {
+				if(node_bo != null && node_bo.getKey() == e.getPrice()) {
+					while(node_bo.get().size() != 0 && so.getLeft() > 0) {
+						process(so, (BuyOrder) node_bo.getByTimeStamp());
+					}
 				}
-			}
-			if(e.getLeft() > 0) {
-				Category.getCategory(e.getCategory()).getSellOffers(e.getSub(), e.getSubSub()).insert(e.getPrice(), e);
+				if(e.getLeft() > 0) {
+					Category.getCategory(e.getCategory()).getSellOffers(e.getSub(), e.getSubSub()).insert(e.getPrice(), e);
+				}
 			}
 		}
 		if(e instanceof BuyOrder) {
@@ -257,13 +265,15 @@ public class EnquiryUtils {
 			SelfBalancingBSTNode node_so = null;
 			tree = Category.getCategory(e.getCategory()).getSellOffers(e.getSub(), e.getSubSub());
 			node_so = tree.get(e.getPrice(), tree.getRoot());
-			if(node_so != null && node_so.getKey() == e.getPrice()) {
-				while(node_so.get().size() != 0 && bo.getLeft() > 0) {
-					process((SellOffer) node_so.getByTimeStamp(), bo);
+			synchronized (lock) {
+				if(node_so != null && node_so.getKey() == e.getPrice()) {
+					while(node_so.get().size() != 0 && bo.getLeft() > 0) {
+						process((SellOffer) node_so.getByTimeStamp(), bo);
+					}
 				}
-			}
-			if(e.getLeft() > 0) {
-				Category.getCategory(e.getCategory()).getBuyOrders(e.getSub(), e.getSubSub()).insert(e.getPrice(), e);
+				if(e.getLeft() > 0) {
+					Category.getCategory(e.getCategory()).getBuyOrders(e.getSub(), e.getSubSub()).insert(e.getPrice(), e);
+				}
 			}
 		}
 	}

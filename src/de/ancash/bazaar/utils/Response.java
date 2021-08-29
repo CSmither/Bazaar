@@ -21,7 +21,12 @@ public class Response {
 	public final String BUY_ORDER_USING_PREDEFINED_PRICE;
 	public final String BUY_ORDER_FILLED;
 	
+	public final String SELL_INSTANTLY;
+	public final String BUY_INSTANTLY;
+	
 	public Response(Bazaar pl) {
+		BUY_INSTANTLY = pl.getConfig().getString("buyInstantly").replace("&", "§");
+		SELL_INSTANTLY = pl.getConfig().getString("sellInstantly").replace("&", "§");
 		CATEGORY_IN_PROCESS = pl.getConfig().getString("categoryInProcess").replace("&", "§");
 		NO_MONEY = pl.getConfig().getString("noMoney").replace("&", "§");
 		INVENTORY_FULL = pl.getConfig().getString("inventoryFull").replace("&", "§");

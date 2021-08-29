@@ -13,7 +13,7 @@ import static de.ancash.bazaar.management.EnquiryUtils.instance;
 
 //use 2,4 tree?
 public class SelfBalancingBST {
-
+	
     private SelfBalancingBSTNode root;     
     
     public SelfBalancingBSTNode getRoot() {
@@ -439,33 +439,35 @@ public class SelfBalancingBST {
         return kthSmallest(root, i, k);
     }
     
-    public Duplet<Integer, Double> processInstaSell(int amount) {
+    public Duplet<Integer, Double> processInstaSell(double price, int amount) {
     	synchronized (this) {
-    		return processInstaSell(amount, (Duplet<Integer, Double>) Tuple.of(0, 0D));
+    		return processInstaSell(price, amount, (Duplet<Integer, Double>) Tuple.of(0, 0D));
 		}
     }
     
-    private Duplet<Integer, Double> processInstaSell(int amount, Duplet<Integer, Double> pair) {
+    private Duplet<Integer, Double> processInstaSell(double price, int sellable, Duplet<Integer, Double> pair) {
     	if(isEmpty()) return pair;
-    	SelfBalancingBSTNode node = getMax();
+    	SelfBalancingBSTNode node = get(price, getRoot());
     	BuyOrder bo = (BuyOrder) node.getByTimeStamp();
-    	if(bo == null) return pair;
-    	
-    	int reducable = bo.getLeft() > amount ? amount : bo.getLeft();
-    	pair.setFirst(pair.getFirst() + reducable);
-    	pair.setSecond(pair.getSecond() + (bo.getPrice() * reducable));
-    	instance.reduce(bo, reducable);
-    	bo.addClaimable(reducable);
-    	if(bo.getLeft() == 0) {
-    		instance.saveAll(bo);
-    		instance.checkEnquiry(bo);
-    		node.remove(bo.getID());
-    	}
-    	if(node.get().isEmpty()) {
-    		deleteKey(bo.getPrice());
-    		return pair;
-    	}
-    	//if(amount > 0 && getRoot().getChildren() != null && getRoot().getChildren().size() != 0) return processInstaSell(amount, pair);
+    	while(bo != null) {
+    		if(bo.getPrice() != price) return pair; //probably too much fluctuation
+    		int reducable = bo.getLeft() > sellable ? sellable : bo.getLeft();
+        	pair.setFirst(pair.getFirst() + reducable);
+        	pair.setSecond(pair.getSecond() + (bo.getPrice() * reducable));
+        	instance.reduce(bo, reducable);
+        	bo.addClaimable(reducable);
+        	sellable -= reducable;
+        	if(bo.getLeft() == 0) {
+        		instance.saveAll(bo);
+        		instance.checkEnquiry(bo);
+        		node.remove(bo.getID());
+        		bo = (BuyOrder) node.getByTimeStamp();
+        	}
+        	if(node.get().isEmpty()) {
+        		deleteKey(price);
+        		return pair;
+        	}
+    	}    	
     	return pair;
     }
     

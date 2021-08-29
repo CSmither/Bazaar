@@ -1,69 +1,115 @@
 package de.ancash.bazaar.sockets.packets;
 
-import java.io.Serializable;
 import java.util.UUID;
 
-import de.ancash.sockets.packet.Packet;
+import de.ancash.bazaar.management.Enquiry.EnquiryType;
 
-public class BazaarMessagePacket implements Serializable, BazaarPacket{
+public class BazaarMessagePacket extends BazaarPacket{
 	
-	private static final long serialVersionUID = -6565667465876109565L;
-	private final String msg;
-	private final UUID target;
-	private final boolean toPlayer;
-	private final boolean broadcast;
-	private final int category;
-	private final int sub;
-	private final int subsub;
+	private static final long serialVersionUID = -3650840609255010009L;
+	  
+	private String message;
+	private UUID target;  
+	private int messageType;
 	
-	public BazaarMessagePacket(String msg, UUID id, boolean toPlayer, boolean broadcast) {
-		this(msg, id, toPlayer, broadcast, -1, -1, -1);
+	private int category, subCategory, subSubCategory, amount, enquiryType;
+	private double price;
+	
+	public BazaarMessagePacket() {
+		super(BazaarHeader.MESSAGE);
+	}
 
+	public String getMessage() {
+		return message;
 	}
-	
-	public BazaarMessagePacket(String msg, UUID id, boolean toPlayer, boolean broadcast, int cat, int sub, int subsub) {
-		this.msg = msg;
-		this.target = id;
-		this.toPlayer = toPlayer;
-		this.broadcast = broadcast;
-		this.category = cat;
-		this.sub = sub;
-		this.subsub = subsub;
+
+	public void setMessage(String message) {
+		this.message = message;
 	}
-	
-	public String getString() {
-		return msg;
-	}
-	
-	public boolean broadcast() {
-		return broadcast;
-	}
-	
+
 	public UUID getTarget() {
 		return target;
 	}
-	
-	public boolean sendToPlayer() {
-		return toPlayer;
-	}
 
-	@Override
-	public Packet getPacket() {
-		Packet packet = new Packet(BazaarHeader.MESSAGE.getHeader());
-		packet.setSerializable(this);
-		return packet;
-	}
-
-	public int getSubSub() {
-		return subsub;
-	}
-
-	public int getSub() {
-		return sub;
+	public void setTarget(UUID target) {
+		this.target = target;
 	}
 
 	public int getCategory() {
 		return category;
 	}
+
+	public void setCategory(int category) {
+		this.category = category;
+	}
+
+	public int getSubCategory() {
+		return subCategory;
+	}
+
+	public void setSubCategory(int subCategory) {
+		this.subCategory = subCategory;
+	}
+
+	public int getSubSubCategory() {
+		return subSubCategory;
+	}
+
+	public void setSubSubCategory(int subSubCategory) {
+		this.subSubCategory = subSubCategory;
+	}
+
+	public int getAmount() {
+		return amount;
+	}
+
+	public void setAmount(int amount) {
+		this.amount = amount;
+	}
+
+	public double getPrice() {
+		return price;
+	}
+
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
+	public EnquiryType getType() {
+		if(enquiryType == 0) return EnquiryType.BUY_ORDER;
+		if(enquiryType == 1) return EnquiryType.SELL_OFFER;
+		return null;
+	}
+
+	public void setType(EnquiryType type) {
+		this.enquiryType = type == EnquiryType.BUY_ORDER ? 0 : 1;
+	}
 	
+	public void setMessageType(BazaarMessagePacket.Type type) {
+		this.messageType = type.asNumber();
+	}
+	
+	public BazaarMessagePacket.Type getMessageType() {
+		switch (messageType) {
+		case 0:
+			return Type.ENQUIRY_FILLED;
+		default:
+			break;
+		}
+		return null;
+	}
+	
+	public enum Type{
+		ENQUIRY_FILLED(0);
+	
+		private final int n;
+		
+		private Type(int n) {
+			this.n = n;
+		}
+		
+		public int asNumber() {
+			return n;
+		}
+	}
 }

@@ -3,6 +3,9 @@ address: localhost
 port: 25600
 tax: 4 #in %
 
+buyInstantly: "&6Bazaar! &7 Bought &a%amount%&7x &r%displayname% for &6%price% coins &7!"
+sellInstantly: "&6Bazaar! &7 Sold  &a%amount%&7x &r%displayname% for &6%price% coins &7!"
+
 noMoney: "&cYou don't have enough money!"
 categoryInProcess: "This Category is still in process!"
 inventoryFull: "&cYour inventory is full!"

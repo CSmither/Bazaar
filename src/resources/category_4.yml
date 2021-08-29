@@ -1,10 +1,10 @@
 # PLACEHOLDER
 
-#%orders_price_highest% lowest price in all buy order
-#%orders_price_highest% highest price in all buy order
+#%orders_price_lowest% lowest price in all buy order
+#%orders_price_highest% coins highest price in all buy order
 #&7%orders_total%&7 total amount of buy orders
 #%orders_content% total amount of items in sell offers
-#%offers__price_lowest% lowest price in all sell offer
+#%offers_price_lowest% coins lowest price in all sell offer
 #%offers_price_highest% highest price in all sell offer
 #&7%offers_total%&7 total amount of sell offers
 #%offers_content% total amount of items in sell offers
@@ -31,10 +31,10 @@
                displayname: "&eOak Log"
                lore:
                - ' '
-               - '&7Buy price: &7%offers_price_lowest%'
+               - '&7Buy price: &7%offers_price_lowest% coins'
                - '&8%offers_content%&8 in &8%offers_total%&8 offers'
                - '   '
-               - '&7Sell price: &7%orders_price_highest%'
+               - '&7Sell price: &7%orders_price_highest% coins'
                - '&8%orders_content%&8 in &8%orders_total%&8 offers'
          original:
             type: LOG
@@ -59,10 +59,10 @@
                displayname: "&eSpruce Log"
                lore:
                - ' '
-               - '&7Buy price: &7%offers_price_lowest%'
+               - '&7Buy price: &7%offers_price_lowest% coins'
                - '&8%offers_content%&8 in &8%offers_total%&8 offers'
                - '   '
-               - '&7Sell price: &7%orders_price_highest%'
+               - '&7Sell price: &7%orders_price_highest% coins'
                - '&8%orders_content%&8 in &8%orders_total%&8 offers'
          original:
             type: LOG
@@ -89,10 +89,10 @@
                displayname: "&eBirch Log"
                lore:
                - ' '
-               - '&7Buy price: &7%offers_price_lowest%'
+               - '&7Buy price: &7%offers_price_lowest% coins'
                - '&8%offers_content%&8 in &8%offers_total%&8 offers'
                - '   '
-               - '&7Sell price: &7%orders_price_highest%'
+               - '&7Sell price: &7%orders_price_highest% coins'
                - '&8%orders_content%&8 in &8%orders_total%&8 offers'
          original:
             type: LOG
@@ -119,10 +119,10 @@
                displayname: "&eDark Oak Log"
                lore:
                - ' '
-               - '&7Buy price: &7%offers_price_lowest%'
+               - '&7Buy price: &7%offers_price_lowest% coins'
                - '&8%offers_content%&8 in &8%offers_total%&8 offers'
                - '   '
-               - '&7Sell price: &7%orders_price_highest%'
+               - '&7Sell price: &7%orders_price_highest% coins'
                - '&8%orders_content%&8 in &8%orders_total%&8 offers'
          original:
             type: LOG_2
@@ -147,10 +147,10 @@
                displayname: "&eAcacia Log"
                lore:
                - ' '
-               - '&7Buy price: &7%offers_price_lowest%'
+               - '&7Buy price: &7%offers_price_lowest% coins'
                - '&8%offers_content%&8 in &8%offers_total%&8 offers'
                - '   '
-               - '&7Sell price: &7%orders_price_highest%'
+               - '&7Sell price: &7%orders_price_highest% coins'
                - '&8%orders_content%&8 in &8%orders_total%&8 offers'
          original:
             type: LOG_2
@@ -175,10 +175,10 @@
                displayname: "&Jungle Log"
                lore:
                - ' '
-               - '&7Buy price: &7%offers_price_lowest%'
+               - '&7Buy price: &7%offers_price_lowest% coins'
                - '&8%offers_content%&8 in &8%offers_total%&8 offers'
                - '   '
-               - '&7Sell price: &7%orders_price_highest%'
+               - '&7Sell price: &7%orders_price_highest% coins'
                - '&8%orders_content%&8 in &8%orders_total%&8 offers'
          original:
             type: LOG
@@ -205,10 +205,10 @@
                displayname: "&eRaw Fish"
                lore:
                - ' '
-               - '&7Buy price: &7%offers_price_lowest%'
+               - '&7Buy price: &7%offers_price_lowest% coins'
                - '&8%offers_content%&8 in &8%offers_total%&8 offers'
                - '   '
-               - '&7Sell price: &7%orders_price_highest%'
+               - '&7Sell price: &7%orders_price_highest% coins'
                - '&8%orders_content%&8 in &8%orders_total%&8 offers'
          original:
             type: RAW_FISH
@@ -233,10 +233,10 @@
                displayname: "&eSalmon"
                lore:
                - ' '
-               - '&7Buy price: &7%offers_price_lowest%'
+               - '&7Buy price: &7%offers_price_lowest% coins'
                - '&8%offers_content%&8 in &8%offers_total%&8 offers'
                - '   '
-               - '&7Sell price: &7%orders_price_highest%'
+               - '&7Sell price: &7%orders_price_highest% coins'
                - '&8%orders_content%&8 in &8%orders_total%&8 offers'
          original:
             type: RAW_FISH
@@ -263,10 +263,10 @@
                displayname: "&eClownfish"
                lore:
                - ' '
-               - '&7Buy price: &7%offers_price_lowest%'
+               - '&7Buy price: &7%offers_price_lowest% coins'
                - '&8%offers_content%&8 in &8%offers_total%&8 offers'
                - '   '
-               - '&7Sell price: &7%orders_price_highest%'
+               - '&7Sell price: &7%orders_price_highest% coins'
                - '&8%orders_content%&8 in &8%orders_total%&8 offers'
          original:
             type: RAW_FISH
@@ -293,10 +293,10 @@
                displayname: "&ePufferfish"
                lore:
                - ' '
-               - '&7Buy price: &7%offers_price_lowest%'
+               - '&7Buy price: &7%offers_price_lowest% coins'
                - '&8%offers_content%&8 in &8%offers_total%&8 offers'
                - '   '
-               - '&7Sell price: &7%orders_price_highest%'
+               - '&7Sell price: &7%orders_price_highest% coins'
                - '&8%orders_content%&8 in &8%orders_total%&8 offers'
          original:
             type: RAW_FISH
@@ -321,10 +321,10 @@
                displayname: "&ePrismarine Shard"
                lore:
                - ' '
-               - '&7Buy price: &7%offers_price_lowest%'
+               - '&7Buy price: &7%offers_price_lowest% coins'
                - '&8%offers_content%&8 in &8%offers_total%&8 offers'
                - '   '
-               - '&7Sell price: &7%orders_price_highest%'
+               - '&7Sell price: &7%orders_price_highest% coins'
                - '&8%orders_content%&8 in &8%orders_total%&8 offers'
          original:
             type: PRISMARINE_SHARD
@@ -347,10 +347,10 @@
                displayname: "&eClay"
                lore:
                - ' '
-               - '&7Buy price: &7%offers_price_lowest%'
+               - '&7Buy price: &7%offers_price_lowest% coins'
                - '&8%offers_content%&8 in &8%offers_total%&8 offers'
                - '   '
-               - '&7Sell price: &7%orders_price_highest%'
+               - '&7Sell price: &7%orders_price_highest% coins'
                - '&8%orders_content%&8 in &8%orders_total%&8 offers'
          original:
             type: CLAY_BALL
@@ -373,10 +373,10 @@
                displayname: "&eLilypad"
                lore:
                - ' '
-               - '&7Buy price: &7%offers_price_lowest%'
+               - '&7Buy price: &7%offers_price_lowest% coins'
                - '&8%offers_content%&8 in &8%offers_total%&8 offers'
                - '   '
-               - '&7Sell price: &7%orders_price_highest%'
+               - '&7Sell price: &7%orders_price_highest% coins'
                - '&8%orders_content%&8 in &8%orders_total%&8 offers'
          original:
             type: WATER_LILY
@@ -399,10 +399,10 @@
                displayname: "&eInk Sack"
                lore:
                - ' '
-               - '&7Buy price: &7%offers_price_lowest%'
+               - '&7Buy price: &7%offers_price_lowest% coins'
                - '&8%offers_content%&8 in &8%offers_total%&8 offers'
                - '   '
-               - '&7Sell price: &7%orders_price_highest%'
+               - '&7Sell price: &7%orders_price_highest% coins'
                - '&8%orders_content%&8 in &8%orders_total%&8 offers'
          original:
             type: INK_SACK
@@ -426,10 +426,10 @@
                displayname: "&eSponge"
                lore:
                - ' '
-               - '&7Buy price: &7%offers_price_lowest%'
+               - '&7Buy price: &7%offers_price_lowest% coins'
                - '&8%offers_content%&8 in &8%offers_total%&8 offers'
                - '   '
-               - '&7Sell price: &7%orders_price_highest%'
+               - '&7Sell price: &7%orders_price_highest% coins'
                - '&8%orders_content%&8 in &8%orders_total%&8 offers'
          original:
             type: SPONGE
